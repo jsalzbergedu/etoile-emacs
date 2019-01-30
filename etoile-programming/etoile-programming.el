@@ -437,8 +437,14 @@ _e_: flycheck-list-errors
                                :repo "jacobono/emacs-gradle-mode")
   :after elisp-checkstyle)
 
+;; dap-jave sneakily uses cl by using first, most probably
+(use-package cl
+  :straight nil
+  :defer t
+  :commands first)
+
 (use-package dap-java
-  :after (dap-mode lsp-java)
+  :after (dap-mode lsp-java cl)
   :init
   (defhydra dap-java-testrun-hydra (:hint nil :color blue)
     "
