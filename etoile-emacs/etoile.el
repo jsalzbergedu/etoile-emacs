@@ -26,6 +26,13 @@
 ;; The entry point for the etoile config
 
 ;;; Code:
+(use-package +emacs
+  :straight (+emacs :type git
+                    :host github
+                    :repo "jsalzbergedu/etoile-emacs"
+                    :files ("+emacs/*.el"))
+  :demand t)
+
 (use-package etoile-themes
   :straight (etoile-themes :type git
                            :host github
