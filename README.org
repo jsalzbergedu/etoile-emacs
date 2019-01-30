@@ -52,3 +52,5 @@ mkdir ~/.emacs.d
 ln -s $HOME/etoile-emacs/init.el $HOME/.emacs.d/init.el
 emacs
 #+end_src
+
+(It should take quite a bit of time to install.)
