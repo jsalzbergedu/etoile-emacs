@@ -30,7 +30,8 @@
   :straight (passwords :type git
                        :host github
                        :repo "jsalzbergedu/etoile-emacs"
-                       :files ("passwords/*"))
+                       :files ("passwords/*")
+                       :no-build t)
   :demand t)
 
 (provide 'etoile-apps)
