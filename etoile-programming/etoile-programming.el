@@ -346,6 +346,19 @@ _e_: flycheck-list-errors
                     :repo "emacs-lsp/lsp-ui")
   :config
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+  (set-face-attribute 'lsp-ui-sideline-code-action nil
+                      :foreground "#2ecc71")
+
+  (set-face-attribute 'lsp-ui-sideline-current-symbol nil
+                      :foreground "white"
+                      :box '(:line-width -1 :color "white")
+                      :weight 'ultra-bold
+                      :height 0.95)
+
+  (set-face-attribute 'lsp-ui-sideline-symbol nil
+                      :foreground "#7f8c8d"
+                      :box '(:line-width -1 :color "#7f8c8d")
+                      :height 0.9)
   :commands lsp-ui-mode)
 
 (use-package lsp-ui-flycheck
@@ -841,11 +854,16 @@ allows rust-project-mode-global to be activated.")
   ;; (setq ccls-sem-function-colors
   ;;       '("#34495e" "#34495e" "#34495e" "#34495e" "#34495e"
   ;;         "#34495e" "#34495e" "#34495e" "#34495e" "#34495e"))
+  (setq ccls-sem-highlight-method 'overlay)
   (ccls-use-default-rainbow-sem-highlight)
   (defun ccls--is-ccls-buffer-advice (f &rest args)
     "Fix ccls--is-ccls-buffer."
     (apply f args)
     (locate-dominating-file default-directory ".ccls-root"))
+
+  (set-face-attribute 'ccls-code-lens-face nil
+                      :inherit 'shadow
+                      :height 0.8)
   (advice-add 'ccls--is-ccls-buffer :around 'ccls--is-ccls-buffer-advice)
   :commands (lsp-ccls-enable ccls-code-lens-mode))
 ;;   :commands lsp-cquery-enable)
@@ -1062,9 +1080,7 @@ allows rust-project-mode-global to be activated.")
                              (google-make-newline-indent)
                              (setq indent-tabs-mode nil
  				   tab-width 2
-                                   c-basic-offset 2
-                                   rainbow-hexadecimal-colors-font-lock-keywords
-                                   cc-mode-rainbow-hexadecimal-colors-font-lock-keywords)
+                                   c-basic-offset 2)
                              (prog-minor-modes-common)))
   (add-hook 'c++-mode-hook #'+ccls/enable-with-lens)
   (add-to-list 'auto-mode-alist '("conanfile\\.txt\\'" . conf-mode))
