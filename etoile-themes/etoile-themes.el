@@ -101,7 +101,7 @@
 ;;                     :height 0.9)
 
 ;; TODO: MOVE TO CCLS
-(setq ccls-sem-highlight-method 'overlay t)
+(setq ccls-sem-highlight-method 'overlay)
 ;; (set-face-attribute 'ccls-code-lens-face nil
 ;;                     :inherit 'shadow
 ;;                     :height 0.8)
