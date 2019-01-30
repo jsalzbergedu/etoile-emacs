@@ -1106,9 +1106,7 @@ allows rust-project-mode-global to be activated.")
                            (google-make-newline-indent)
                            (setq indent-tabs-mode nil
                                  tab-width 2
-                                 c-basic-offset 2
-                                 rainbow-hexadecimal-colors-font-lock-keywords
-                                 cc-mode-rainbow-hexadecimal-colors-font-lock-keywords)
+                                 c-basic-offset 2)
                            (setq show-trailing-whitespace t)
                            (prog-minor-modes-common)))
   (add-hook 'c-mode-hook #'+ccls/enable-with-lens)
