@@ -56,7 +56,6 @@
                      :host github
                      :repo "iqbalansari/emacs-emojify"
                      :files ("data" "emojify.el"))
-  :files ("data" "emojify.el")
   :demand t
   :init (setq emojify-emoji-styles '(unicode))
   :config (global-emojify-mode))
