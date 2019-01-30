@@ -33,7 +33,10 @@
 
 (use-package general
   :demand t
-  :straight t)
+  :straight t
+  :init
+  (eval-and-compile
+    (require 'general)))
 
 (use-package evil
   :demand t
