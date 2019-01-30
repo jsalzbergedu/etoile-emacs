@@ -31,12 +31,15 @@
 (setq-default indent-tabs-mode nil)
 
 ;; Relevant to all programming before language packages are setup:
+;;;###autoload
 (defvar prog-minor-modes-common (list)
   "A common hook for programming minor modes")
+;;;###autoload
 (defun prog-minor-modes-common ()
   "A common hook for programming minor modes"
   (interactive)
   (mapc 'funcall prog-minor-modes-common))
+;;;###autoload
 (defun add-prog-minor-modes-common (&rest mode-hooks)
   "Add prog-minor-modes-common to MODE-HOOKS"
   (mapc (lambda (a) (add-hook a 'prog-minor-modes-common)) mode-hooks))
@@ -166,9 +169,9 @@
   :config
   ;; Remove the #define being colored
   (setq rainbow-hexadecimal-colors-font-lock-keywords
-        '(("[^&]\\(#\\(?!define\\)\\(?:[0-9a-fA-F]\\{3\\}\\)+\\{1,4\\}\\)"
+        '(("[^&]\\(#(?!define)\\(?:[0-9a-fA-F]\\{3\\}\\)+\\{1,4\\}\\)"
            (1 (rainbow-colorize-itself 1)))
-          ("^\\(#\\(?:[0-9a-fA-F]\\{3\\}\\)\\(?!define\\)+\\{1,4\\}\\)"
+          ("^\\(#\\(?:[0-9a-fA-F]\\{3\\}\\)(?!define)+\\{1,4\\}\\)"
            (0 (rainbow-colorize-itself)))
           ("[Rr][Gg][Bb]:[0-9a-fA-F]\\{1,4\\}/[0-9a-fA-F]\\{1,4\\}/[0-9a-fA-F]\\{1,4\\}"
            (0 (rainbow-colorize-itself)))
@@ -307,7 +310,10 @@ _j_: company-select-next-or-abort
   :demand t
   :straight (project-hydra :type git
                            :host github
-                           :repo "jsalzbergedu/project-hydra"))
+                           :repo "jsalzbergedu/project-hydra")
+  :init
+  (eval-and-compile
+    (require 'project-hydra)))
 
 ;; Magit, the excellent interface to git through emacs
 (use-package magit
@@ -352,6 +358,7 @@ _e_: flycheck-list-errors
 ;; Nlinum to display the line
 (use-package nlinum
   :straight t
+  :init (add-hook 'prog-minor-modes-common 'nlinum-mode)
   :config (progn (setq nlinum-format "%4d │ "))
   :commands nlinum-mode)
 
@@ -360,7 +367,6 @@ _e_: flycheck-list-errors
                              :host github
                              :repo "hlissner/emacs-nlinum-hl")
   :after nlinum
-  :init (add-hook 'prog-minor-modes-common 'nlinum-hl-mode)
   :demand t)
 
 ;; All c-likes
@@ -462,6 +468,7 @@ _m_: dap-java-run-test-method"
 ;;                                                                     material-design-icons-community-repo-location
 ;;                                                                   material-design-icons-repo-location)))))
 
+
 (use-package treemacs
   :straight t
   :config
@@ -474,7 +481,8 @@ _m_: dap-java-run-test-method"
   (treemacs--setup-icon treemacs-icon-java (cdr-assoc 'java
                                                       treemacs-material-design-icons-community-alist) "java")
   (setq treemacs-git-mode 'simple)
-  (add-hook 'treemacs-mode-hook (lambda () (setq-local truncate-lines t))))
+  (add-hook 'treemacs-mode-hook (lambda () (setq-local truncate-lines t)))
+  :commands treemacs--setup-icon)
 
 
 (define-minor-mode java-project-mode
@@ -484,7 +492,21 @@ _m_: dap-java-run-test-method"
 
 (add-hook 'java-project-mode-hook 'evil-normalize-keymaps)
 
-(evil-define-key 'normal java-project-mode-map (kbd "SPC p") 'hydra-java/body)
+(project-hydra hydra-java
+  :test dap-java-testrun-hydra/body
+  :compile lsp-java-build-project
+  :stylecheck checkstyle
+  :search counsel-projectile-rg
+  :git magit-status
+  :run dap-java-debug
+  :and ("p" counsel-projectile-find-file)
+  :and ("e" hydra-flycheck-error/body)
+  :and ("a" lsp-ui-sideline-apply-code-actions)
+  :and ("d" xref-find-definitions-other-window)
+  :and ("f" xref-find-definitions)
+  :and ("o" toggle-dap))
+
+;; (evil-define-key 'normal java-project-mode-map (kbd "SPC p") 'hydra-java/body)
 
 (defvar-local is-java-project nil "A local variable that, when set to t,
 allows java-project-mode-global to be activated.")
@@ -497,6 +519,7 @@ allows java-project-mode-global to be activated.")
               (locate-dominating-file default-directory ".classpath")
               is-java-project)
         (java-project-mode 1))))
+
 
 (use-package lsp-java
   :demand t
@@ -515,20 +538,6 @@ allows java-project-mode-global to be activated.")
 				                 (setq indent-tabs-mode nil
 					               tab-width 4
                                                        c-basic-offset 4))))
-
-  (project-hydra hydra-java
-    :test dap-java-testrun-hydra/body
-    :compile lsp-java-build-project
-    :stylecheck checkstyle
-    :search counsel-projectile-rg
-    :git hydra-magit/body
-    :run dap-java-debug
-    :and ("p" counsel-projectile-find-file)
-    :and ("e" hydra-flycheck-error/body)
-    :and ("a" lsp-ui-sideline-apply-code-actions)
-    :and ("d" xref-find-definitions-other-window)
-    :and ("f" xref-find-definitions)
-    :and ("o" toggle-dap))
 
   (evil-define-key 'normal java-mode-map (kbd "SPC p") 'hydra-java/body))
 
@@ -1009,6 +1018,12 @@ allows rust-project-mode-global to be activated.")
 
 ;; (cpp-project-mode-global 1)
 
+(use-package make-mode
+  :straight nil
+  :defer t
+  :init
+  (add-hook 'makefile-mode-hook 'prog-minor-modes-common))
+
 (project-hydra hydra-c
   :test +cc-mode/test
   :compile +cc-mode/compile
@@ -1022,12 +1037,18 @@ allows rust-project-mode-global to be activated.")
   :and ("d" xref-find-definitions-other-window)
   :and ("f" xref-find-definitions))
 
-(use-package make-mode
-  :straight nil
-  :defer t
-  :init
-  (add-hook 'makefile-mode-hook 'prog-minor-modes-common))
-
+(project-hydra hydra-cpp
+  :test +cc-mode/test
+  :compile +cc-mode/compile
+  :stylecheck nil
+  :search counsel-projectile-rg
+  :git hydra-magit/body
+  :run nil
+  :and ("p" counsel-projectile-find-file)
+  :and ("e" hydra-flycheck-error/body)
+  :and ("a" lsp-ui-sideline-apply-code-actions)
+  :and ("d" xref-find-definitions-other-window)
+  :and ("f" xref-find-definitions))
 
 (use-package cc-mode
   :defer t
@@ -1047,18 +1068,6 @@ allows rust-project-mode-global to be activated.")
                              (prog-minor-modes-common)))
   (add-hook 'c++-mode-hook #'+ccls/enable-with-lens)
   (add-to-list 'auto-mode-alist '("conanfile\\.txt\\'" . conf-mode))
-  (project-hydra hydra-cpp
-    :test +cc-mode/test
-    :compile +cc-mode/compile
-    :stylecheck nil
-    :search counsel-projectile-rg
-    :git hydra-magit/body
-    :run nil
-    :and ("p" counsel-projectile-find-file)
-    :and ("e" hydra-flycheck-error/body)
-    :and ("a" lsp-ui-sideline-apply-code-actions)
-    :and ("d" xref-find-definitions-other-window)
-    :and ("f" xref-find-definitions))
   (evil-define-key 'normal c++-mode-map (kbd "SPC p") 'hydra-cpp/body)
   (add-hook 'c++-mode-hook #'evil-normalize-keymaps)
   ;; c stuff

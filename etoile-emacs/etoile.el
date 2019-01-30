@@ -51,7 +51,9 @@
   :straight (etoile-programming :type git
                                 :host github
                                 :repo "jsalzbergedu/etoile-emacs"
-                                :files ("etoile-programming/*.el")))
+                                :files ("etoile-programming/*.el"))
+  :demand t
+  :defines hydra-java)
 
 (provide 'etoile)
 ;;; etoile.el ends here
