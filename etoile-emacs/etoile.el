@@ -47,5 +47,11 @@
                                 :files ("etoile-keybindings/*.el"))
   :demand t)
 
+(use-package etoile-programming
+  :straight (etoile-programming :type git
+                                :host github
+                                :repo "jsalzbergedu/etoile-emacs"
+                                :files ("etoile-programming/*.el")))
+
 (provide 'etoile)
 ;;; etoile.el ends here
