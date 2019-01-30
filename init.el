@@ -18,5 +18,5 @@
   :straight (etiole :type git
                     :host github
                     :repo "jsalzbergedu/etoile-emacs"
-                    :files ("etoile-emacs/etiole.el"))
+                    :files ("etoile-emacs/*.el"))
   :demand t)

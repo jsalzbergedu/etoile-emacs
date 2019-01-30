@@ -30,7 +30,7 @@
   :straight (etoile-themes :type git
                            :host github
                            :repo "jsalzbergedu/etoile-emacs"
-                           :files ("etiole-themes/etiole-themes.el"))
+                           :files ("etiole-themes/*.el"))
   :demand t)
 
 (provide 'etoile)
