@@ -23,9 +23,22 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+;; Passwords for etoile.
 
 ;;; Code:
 
+(defvar passwords-passwords '()
+  "An alist of passwords.")
+
+(setq passwords-passwords
+      '((gitter . "[Insert your gitter password here]")
+        (bintray-user . "[Insert your bintray username here]")
+        (bintray-key . "[Insert your bintray key here]")
+        (irc . "[Insert your irc password here]")))
+
+(defun passwords-get (key)
+  "Return the password as a string at KEY."
+  (cdr (assoc key passwords-passwords)))
 
 (provide 'passwords)
 ;;; passwords.el ends here
