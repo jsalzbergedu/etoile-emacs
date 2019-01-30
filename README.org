@@ -21,3 +21,34 @@ The goals of this config are to
 
 * Reminders
 1. Edit ~/.emacs.d/straight/build/etoile/ and not the ~/.emacs.d/ itself!
+
+* Installation:
+Make sure you have no ~/.emacs file:
+#+name: No .emacs
+#+begin_src shell
+mv ~/.emacs ~/.emacs.backup
+#+end_src
+
+Stow away your .emacs.d
+
+#+name: No .emacs.d
+#+begin_src shell
+mv ~/.emacs.d ~/.emacs.d.old
+#+end_src
+
+Clone this repository
+
+#+name: Clone etoile
+#+begin_src shell
+cd ~/
+git clone https://github.com/jsalzbergedu/etoile-emacs.git
+#+end_src
+
+
+Finally, to install:
+#+name: Install
+#+begin_src shell
+mkdir ~/.emacs.d
+ln -s $HOME/etoile-emacs/init.el $HOME/.emacs.d/init.el
+emacs
+#+end_src
