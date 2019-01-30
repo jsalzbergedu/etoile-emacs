@@ -1,0 +1,20 @@
+#+Title: Etoile -- An emacs config using the straight package manager
+#+Author: Jacob Salzberg
+
+* Goals
+The goal of this config is to
+1. Use the straight package manager to manage packages,
+   including cloning and building repositories.
+   
+2. Break up my emacs config into reusable parts
+   
+3. Be usable from any linux computer without hassle.
+   
+
+* Guidelines
+1. Use use-package for every package loaded
+2. Every package can be fetched from github (or another source defined by straight)
+   that is to say, :straight should not be nil for any package
+3. If the configuration of a package takes more than ten lines, add an auxilary package
+   called +[package_name] that contains the configuration
+4. :defer when possible, :demand otherwise (but never leave that unspecified)
