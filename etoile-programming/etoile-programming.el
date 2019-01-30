@@ -323,6 +323,11 @@ _j_: company-select-next-or-abort
   (:keymaps '(magit-mode-map magit-diff-mode-map)
             "SPC" nil))
 
+;; Evil-magit, the only way I can use magit
+(use-package evil-magit
+  :demand t
+  :after magit)
+
 (use-package flycheck
   :straight t
   :defer t
