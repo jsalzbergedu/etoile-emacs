@@ -139,7 +139,9 @@
   (require 'smartparens-config)
   (add-hook 'prog-minor-modes-common 'show-paren-mode)
   :commands (smartparens-mode sp-forward-slurp-sexp)
-  :init (add-hook 'prog-minor-modes-common 'smartparens-mode)
+  :init
+  (add-hook 'prog-minor-modes-common 'smartparens-mode)
+  (add-hook 'prog-minor-modes-common 'show-smartparens-mode)
   :general
   (:keymaps '(normal motion)
             "SPC s" 'sp-forward-slurp-sexp)
@@ -325,6 +327,9 @@ _j_: company-select-next-or-abort
 
 ;; Evil-magit, the only way I can use magit
 (use-package evil-magit
+  :straight (evil-magit :type git
+                        :host github
+                        :repo "emacs-evil/evil-magit")
   :demand t
   :after magit)
 
