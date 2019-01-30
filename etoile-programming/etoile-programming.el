@@ -84,6 +84,16 @@
                             :fork (:host github
                                    :repo "jsalzbergedu/prettify-utils.el")))
 
+(use-package +prettify-utils
+  :demand t
+  :after (prettify-utils)
+  :straight (+prettify-utils :type git
+                             :host github
+                             :repo "jsalzbergedu/etoile-emacs"
+                             :files ("etoile-programming/+prettify-utils/*.el"))
+  :config
+  (add-hook 'prog-minor-modes-common 'prettify-symbols-mode))
+
 (use-package ansi-color
   :demand t
   :straight nil)
@@ -109,5 +119,153 @@
 
   :bind (:map compilation-mode-map
 	      ("SPC" . nil)))
+
+
+;; Display side indicators in the margins
+(use-package fringe-helper
+  :demand t
+  :straight t)
+
+;; Smartparens, for () {} '' "" []
+(use-package smartparens
+  :straight (smartparens :type git
+                         :host github
+                         :repo "Fuco1/smartparens")
+  :defer t
+  :config
+  (require 'smartparens-config)
+  (add-hook 'prog-minor-modes-common 'show-paren-mode)
+  :commands (smartparens-mode sp-forward-slurp-sexp)
+  :init (add-hook 'prog-minor-modes-common 'smartparens-mode)
+  :bind (:map evil-normal-state-map
+	      ("SPC s" . sp-forward-slurp-sexp)
+	      :map evil-motion-state-map
+	      ("SPC s" . sp-forward-slurp-sexp)))
+
+(use-package smartparens-config
+  :straight nil
+  :after smartparens
+  :demand t)
+
+;; Rainbow delimiters, a visual hint of nest depth
+(use-package rainbow-delimiters
+  :defer t
+  :straight (rainbow-delimeters :type git
+                                :host github
+                                :repo "Fanael/rainbow-delimiters")
+  :commands rainbow-delimiters-mode
+  :init (add-hook 'prog-minor-modes-common 'rainbow-delimiters-mode))
+
+(use-package rainbow-mode
+  :defer t
+  :straight t
+  :init (add-hook 'prog-minor-modes-common 'rainbow-mode)
+  :config
+  ;; Remove the #define being colored
+  (setq rainbow-hexadecimal-colors-font-lock-keywords
+        '(("[^&]\\(#\\(?!define\\)\\(?:[0-9a-fA-F]\\{3\\}\\)+\\{1,4\\}\\)"
+           (1 (rainbow-colorize-itself 1)))
+          ("^\\(#\\(?:[0-9a-fA-F]\\{3\\}\\)\\(?!define\\)+\\{1,4\\}\\)"
+           (0 (rainbow-colorize-itself)))
+          ("[Rr][Gg][Bb]:[0-9a-fA-F]\\{1,4\\}/[0-9a-fA-F]\\{1,4\\}/[0-9a-fA-F]\\{1,4\\}"
+           (0 (rainbow-colorize-itself)))
+          ("[Rr][Gg][Bb][Ii]:[0-9.]+/[0-9.]+/[0-9.]+"
+           (0 (rainbow-colorize-itself)))
+          ("\\(?:[Cc][Ii][Ee]\\(?:[Xx][Yy][Zz]\\|[Uu][Vv][Yy]\\|[Xx][Yy][Yy]\\|[Ll][Aa][Bb]\\|[Ll][Uu][Vv]\\)\\|[Tt][Ee][Kk][Hh][Vv][Cc]\\):[+-]?[0-9.]+\\(?:[Ee][+-]?[0-9]+\\)?/[+-]?[0-9.]+\\(?:[Ee][+-]?[0-9]+\\)?/[+-]?[0-9.]+\\(?:[Ee][+-]?[0-9]+\\)?"
+           (0 (rainbow-colorize-itself))))))
+
+;; Yasnippet, a snippet manager
+(use-package yasnippet
+  :defer t
+  :straight (yasnippet :type git
+                       :host github
+                       :repo "joaotavora/yasnippet")
+  :commands yas-insert-snippet)
+
+(use-package yasnippet-snippets
+  :after yasnippet
+  :demand t
+  :straight (yasnippet-snippets :type git
+                                :host github
+                                :repo "AndreaCrotti/yasnippet-snippets"
+                                :files ("yasnippet-snippets.el" "snippets")))
+
+(add-hook 'prog-minor-modes-common 'yas-minor-mode)
+(add-hook 'prog-minor-modes-common 'evil-normalize-keymaps)
+
+;; Company mode for autocompletion
+
+(use-package company
+  :demand t
+  :straight (company :type git
+                     :host github
+                     :repo "company-mode/company-mode")
+  :init (global-company-mode 1)
+  :config
+  (defhydra company-hydra (:hint nil :color blue)
+    "
+Navigation
+^^^^^^^^^^^--------------
+_k_: company-select-previous-or-abort
+_j_: company-select-next-or-abort
+"
+    ("k" company-select-previous-or-abort :color 'pink)
+    ("j" company-select-next-or-abort :color 'pink))
+  (setq company-idle-delay 0.2
+	company-minimum-prefix-length 1)
+  (define-key company-active-map (kbd "C-o") 'company-hydra/body)
+  :commands global-company-mode)
+
+;; LSP mode, a common interface to LSP providers
+;; The lsp modes don't play nice with lazy loading
+(use-package lsp-mode
+  :demand t
+  :straight (lsp-mode :type git
+                      :host github
+                      :repo "emacs-lsp/lsp-mode")
+  :config
+  (setq lsp-inhibit-message t
+        lsp-print-io nil))
+
+;; LSP's completion package
+(use-package company-lsp
+  :demand t
+  :straight (company-lsp :type git
+                         :host github
+                         :repo "tigersoldier/company-lsp")
+  :config (add-to-list 'company-backend 'company-lsp))
+
+;; Required by dap-mode
+(use-package bui
+  :straight (bui :type git
+                 :host github
+                 :repo "alezost/bui.el")
+  :demand t)
+
+;; Required by dap-mode
+(use-package tree-mode
+  :straight t
+  :demand t)
+
+;; Like LSP, but for debuggers
+(use-package dap-mode
+  :demand t
+  :straight (dap-mode :type git
+                      :host github
+                      :repo "yyoncho/dap-mode"
+                      :files ("*.el" "icons/eclipse")))
+
+(use-package dap-ui
+  :after dap-mode
+  :straight nil)
+
+(use-package dap-ui-repl
+  :after dap-mode
+  :straight nil)
+
+(use-package dap-hydra
+  :after dap-mode
+  :straight nil)
+
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here

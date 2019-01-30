@@ -1,4 +1,4 @@
-;;; +prettify-utils.el --- Configuration for prettify utils
+;;; +prettify-utils.el --- Configuration for prettify utils -*- lexical-binding: t -*-
 
 ;; Copyright © 2019 Jacob Salzberg
 
@@ -25,6 +25,22 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'prettify-utils)
+
+(add-hook 'prettify-symbols-mode-hook
+          (lambda ()
+	    (setq prettify-symbols-alist
+		  (prettify-utils-generate
+		   ("lambda" "λ")
+		   ("delta" "∆")
+		   ("nu" "𝜈")
+		   ("Reals" "ℝ")
+		   ("reals" "ℝ")
+		   ("<="     "≤")
+		   (">="     "≥")
+		   ("pi" "𝜋")
+		   ("->"     "→ ")))))
 
 
+(provide '+prettify-utils)
 ;;; +prettify-utils.el ends here
