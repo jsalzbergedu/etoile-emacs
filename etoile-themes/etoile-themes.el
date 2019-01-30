@@ -27,6 +27,14 @@
 
 ;;; Code:
 
+;; Cleaning up of unneccesary visual elements
+(set-fringe-mode (setq fringe-mode 0))
+(setq fringes-outside-margins t) ; for when they're necessary
+(set-scroll-bar-mode (setq scroll-bar-mode nil))
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(setq cursor-in-non-selected-windows nil)
+
 ;; Text editing
 (set-face-attribute 'fixed-pitch nil
                     :family "Inconsolata")
