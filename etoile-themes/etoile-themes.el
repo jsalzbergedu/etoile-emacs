@@ -26,7 +26,6 @@
 ;; Theme settings for etoile-emacs
 
 ;;; Code:
-(message "proof of concept")
 
 ;; Text editing
 (set-face-attribute 'fixed-pitch nil
@@ -87,25 +86,25 @@
   :config (load-theme 'flatui t))
 
 ;; TODO: MOVE TO LSP-UI
-(set-face-attribute 'lsp-ui-sideline-code-action nil
-                    :foreground "#2ecc71")
+;; (set-face-attribute 'lsp-ui-sideline-code-action nil
+;;                     :foreground "#2ecc71")
 
-(set-face-attribute 'lsp-ui-sideline-current-symbol nil
-                    :foreground "white"
-                    :box '(:line-width -1 :color "white")
-                    :weight 'ultra-bold
-                    :height 0.95)
+;; (set-face-attribute 'lsp-ui-sideline-current-symbol nil
+;;                     :foreground "white"
+;;                     :box '(:line-width -1 :color "white")
+;;                     :weight 'ultra-bold
+;;                     :height 0.95)
 
-(set-face-attribute 'lsp-ui-sideline-symbol nil
-                    :foreground "#7f8c8d"
-                    :box '(:line-width -1 :color "#7f8c8d")
-                    :height 0.9)
+;; (set-face-attribute 'lsp-ui-sideline-symbol nil
+;;                     :foreground "#7f8c8d"
+;;                     :box '(:line-width -1 :color "#7f8c8d")
+;;                     :height 0.9)
 
 ;; TODO: MOVE TO CCLS
 (setq ccls-sem-highlight-method 'overlay t)
-(set-face-attribute 'ccls-code-lens-face nil
-                    :inherit 'shadow
-                    :height 0.8)
+;; (set-face-attribute 'ccls-code-lens-face nil
+;;                     :inherit 'shadow
+;;                     :height 0.8)
 
 
 (provide 'etoile-themes)
