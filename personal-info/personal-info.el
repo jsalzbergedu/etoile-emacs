@@ -1,4 +1,4 @@
-;;; personal-info.el --- Personal information.
+;;; personal-info.el --- Personal information. -*- no-byte-compile: t; -*-
 
 ;; Copyright © 2019 Jacob Salzberg
 

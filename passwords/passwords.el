@@ -1,4 +1,4 @@
-;;; passwords.el --- Passwords for this config
+;;; passwords.el --- Passwords for this config -*- no-byte-compile: t; -*-
 
 ;; Copyright © 2019 Jacob Salzberg
 

@@ -30,8 +30,7 @@
   :straight (passwords :type git
                        :host github
                        :repo "jsalzbergedu/etoile-emacs"
-                       :files ("passwords/*")
-                       :no-build t)
+                       :files ("passwords/*"))
   :demand t)
 
 (use-package dired-subtree
