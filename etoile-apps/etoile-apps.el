@@ -26,7 +26,12 @@
 ;; Configuration of applications for etoile
 
 ;;; Code:
-
+(use-package passwords
+  :straight (passwords :type git
+                       :host github
+                       :repo "jsalzbergedu/etoile-emacs"
+                       :files ("passwords/*"))
+  :demand t)
 
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here
