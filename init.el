@@ -14,8 +14,8 @@
 (push "lib" straight-default-files-directive)
 (straight-use-package 'use-package)
 
-(use-package etiole
-  :straight (etiole :type git
+(use-package etoile
+  :straight (etoile :type git
                     :host github
                     :repo "jsalzbergedu/etoile-emacs"
                     :files ("etoile-emacs/*.el"))
