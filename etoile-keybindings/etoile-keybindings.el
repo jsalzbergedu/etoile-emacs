@@ -43,7 +43,7 @@
   :straight t
   :after (evil-collection)
   :init
-  (setq evil-want-keybinding nil)
+  (eval-and-compile (setq evil-want-keybinding nil))
   :config
   (evil-mode 1)
   (global-undo-tree-mode)
