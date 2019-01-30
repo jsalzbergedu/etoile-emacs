@@ -89,8 +89,8 @@
   :straight nil
   ;; For some reason info must be brute forced here
   :config
-  (substitute-key-definition 'Info-scroll-up nil Info-mode-map)
-  (evil-define-key 'normal 'Info-mode-map (kbd "p") 'Info-prev))
+  (substitute-key-definition 'Info-scroll-up nil Info-mode-map))
+  ;; (evil-define-key 'normal 'Info-mode-map (kbd "p") 'Info-prev))
 
 ;; Ivy, Swiper, Counil, Flx, and Amx
 (use-package swiper
