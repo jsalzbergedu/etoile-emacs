@@ -280,7 +280,8 @@ _j_: company-select-next-or-abort
   :straight (personal-info :type git
                            :host github
                            :repo "jsalzbergedu/etoile-emacs"
-                           :files ("personal-info/*.el")))
+                           :files ("personal-info/*.el")
+                           :no-build t))
 
 (use-package project-init
   :straight (project-init :type git
