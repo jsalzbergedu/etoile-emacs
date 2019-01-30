@@ -33,5 +33,13 @@
                            :files ("etoile-themes/*.el"))
   :demand t)
 
+;; "Opt out" of custom-set-variables.
+;; These variables will still be viewable after they are set,
+;; but they will dissapear upon the cleaning of /tmp/.
+(setq custom-file "/tmp/emacs-custom.el")
+
+;; Enable some disabled methods
+(put 'upcase-region 'disabled nil)
+
 (provide 'etoile)
 ;;; etoile.el ends here
