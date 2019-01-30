@@ -395,7 +395,11 @@ _e_: flycheck-list-errors
 ;; All c-likes
 (use-package google-c-style
   :defer t
-  :straight t)
+  :straight (google-c-style :type git
+                            :host github
+                            :repo "google/styleguide"
+                            :branch "gh-pages"
+                            :files ("*.el")))
 
 ;; Python:
 (use-package python
