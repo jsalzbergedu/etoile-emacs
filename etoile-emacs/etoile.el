@@ -52,8 +52,14 @@
                                 :host github
                                 :repo "jsalzbergedu/etoile-emacs"
                                 :files ("etoile-programming/*.el"))
-  :demand t
-  :defines hydra-java)
+  :demand t)
+
+(use-package etoile-apps
+  :straight (etoile-apps :type git
+                         :host github
+                         :repo "jsalzbergedu/etoile-emacs"
+                         :files ("etoile-apps/*.el"))
+  :demand t)
 
 (provide 'etoile)
 ;;; etoile.el ends here
