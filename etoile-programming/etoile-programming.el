@@ -440,7 +440,7 @@ _e_: flycheck-list-errors
 ;; dap-jave sneakily uses cl by using first, most probably
 (use-package cl
   :straight nil
-  :defer t
+  :demand t
   :commands first)
 
 (use-package dap-java
