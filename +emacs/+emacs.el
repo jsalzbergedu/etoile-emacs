@@ -1,11 +1,11 @@
-;;; etoile.el --- A modular emacs config using the straight package manager -*- lexical-binding: t -*-
+;;; +emacs.el --- Configuration for emacs variables -*- lexical-binding: t -*-
 
 ;; Copyright © 2019 Jacob Salzberg
 
 ;; Author: Jacob Salzberg <jssalzbe@ncsu.edu>
-;; URL: https://github.com/jsalzbergedu/etoile-emacs
+;; URL: https://github.com/jsalzbergedu/+emacs
 ;; Version: 0.1.0
-;; Keywords: etoile emacs config
+;; Keywords: configuration etoile
 
 ;; This file is not a part of GNU Emacs
 
@@ -23,22 +23,26 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; The entry point for the etoile config
+;; Configuration for emacs variables
 
 ;;; Code:
-(use-package etoile-themes
-  :straight (etoile-themes :type git
-                           :host github
-                           :repo "jsalzbergedu/etoile-emacs"
-                           :files ("etoile-themes/*.el"))
-  :demand t)
+(defun +emacs/search (string)
+  (interactive "sSearch: ")
+  (start-process "Search the internet"
+                 nil
+                 "firefox"
+                 "--search"
+                 string))
 
-(use-package etoile-keybindings
-  :straight (etoile-keybindings :type git
-                                :host github
-                                :repo "jsalzbergedu/etoile-emacs"
-                                :files ("etoile-keybindings/*.el"))
-  :demand t)
+;; "Opt out" of custom-set-variables.
+;; These variables will still be viewable after they are set,
+;; but they will dissapear upon the cleaning of /tmp/.
+(setq custom-file "/tmp/emacs-custom.el")
 
-(provide 'etoile)
-;;; etoile.el ends here
+;; Enable some disabled methods
+(put 'upcase-region 'disabled nil)
+
+
+
+(provide '+emacs)
+;;; +emacs.el ends here

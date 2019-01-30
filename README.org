@@ -2,7 +2,7 @@
 #+Author: Jacob Salzberg
 
 * Goals
-The goal of this config is to
+The goals of this config are to
 1. Use the straight package manager to manage packages,
    including cloning and building repositories.
    

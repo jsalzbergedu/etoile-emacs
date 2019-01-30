@@ -25,8 +25,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(message "bonjour")
-
 
 (provide 'etoile-keybindings)
 ;;; etoile-keybindings.el ends here
