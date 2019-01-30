@@ -14,7 +14,7 @@ The goals of this config are to
 * Guidelines
 1. Use use-package for every package loaded
 2. Every package can be fetched from github (or another source defined by straight)
-   that is to say, :straight should not be nil for any package
+   that is to say, :straight should not be nil for any package except ones that are part of emacs.
 3. If the configuration of a package takes more than ten lines, add an auxilary package
    called +[package_name] that contains the configuration
 4. :defer when possible, :demand otherwise (but never leave that unspecified)

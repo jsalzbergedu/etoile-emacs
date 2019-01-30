@@ -25,6 +25,112 @@
 ;;; Commentary:
 
 ;;; Code:
+(use-package undo-tree
+  :demand t
+  :straight t
+  :config
+  (global-undo-tree-mode 1))
+
+(use-package general
+  :demand t
+  :straight t)
+
+(use-package evil
+  :demand t
+  :straight t
+  :after (evil-collection)
+  :init
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-mode 1)
+  (global-undo-tree-mode)
+  :general
+  (:keymaps '(normal motion)
+            "SPC" nil
+            "SPC l" 'windmove-right
+            "SPC h" 'windmove-left
+            "SPC k" 'windmove-up
+            "SPC j" 'windmove-down
+            "SPC q" 'kill-this-buffer
+            "SPC a" 'switch-to-buffer
+            "SPC SPC" '+emacs/search))
+
+(use-package evil-collection
+  :demand t
+  :straight (evil-collection :type git
+                             :host github
+                             :repo "emacs-evil/evil-collection")
+  :init
+  :config
+  (setq evil-collection-mode-list (remove 'company evil-collection-mode-list))
+  (push "SPC" evil-collection-key-blacklist)
+  (evil-collection-init))
+
+;; Unset space in many packages
+(use-package dired
+  :defer t
+  :straight nil
+  :general
+  (:keymaps '(dired-mode-map)
+            "SPC" nil))
+
+(use-package help-mode
+  :defer t
+  :straight nil
+  :general
+  (:keymaps '(help-mode-map)
+            "SPC" nil))
+
+(use-package info
+  :defer t
+  :straight nil
+  ;; For some reason info must be brute forced here
+  :config
+  (substitute-key-definition 'Info-scroll-up nil Info-mode-map)
+  (evil-define-key 'normal 'Info-mode-map (kbd "p" 'Info-prev)))
+
+;; Ivy, Swiper, Counil, Flx, and Amx
+(use-package swiper
+  :straight t
+  :general
+  ("C-s" 'swiper))
+
+(use-package flx
+  :straight t
+  :defer t)
+
+(use-package ivy
+  :demand t
+  :straight t
+  :config
+  (setq ivy-use-virtual-buffers t
+        enable-recursive-minibuffers t
+        ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  (ivy-mode 1)
+  :general
+  ("C-c C-r" 'ivy-resume)
+  :commands ivy-mode)
+
+(use-package hydra
+  :straight t
+  :demand t)
+
+(use-package ivy-hydra
+  :straight t
+  :demand t)
+
+(use-package amx
+  :straight t
+  :defer t)
+
+(use-package counsel
+  :demand t
+  :straight t
+  :general
+  (:keymaps '(normal motion)
+            "SPC f" 'counsel-find-file)
+  ("M-x" 'counsel-M-x)
+  ("C-x C-f" 'counsel-find-file))
 
 (provide 'etoile-keybindings)
 ;;; etoile-keybindings.el ends here
