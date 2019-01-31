@@ -11,6 +11,11 @@ The goals of this config are to
 3. Be usable from any linux computer without hassle.
    
 
+* System Requirements
+1. Inconsolata LGC font
+2. Fira Mono font
+3. ccls language server
+
 * Guidelines
 1. Use use-package for every package loaded
 2. Every package can be fetched from github (or another source defined by straight)
