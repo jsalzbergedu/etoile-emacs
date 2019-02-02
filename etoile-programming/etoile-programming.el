@@ -335,6 +335,12 @@ _j_: company-select-next-or-abort
   :demand t
   :after magit)
 
+(use-package keychain-environment
+  :straight t
+  :demand t
+  :config
+  (keychain-refresh-environment))
+
 (use-package flycheck
   :straight t
   :defer t
