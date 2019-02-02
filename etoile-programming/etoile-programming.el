@@ -231,6 +231,8 @@ _j_: company-select-next-or-abort
   :straight (lsp-mode :type git
                       :host github
                       :repo "emacs-lsp/lsp-mode")
+  :init
+  (setq lsp-prefer-flymake nil)
   :config
   (setq lsp-inhibit-message t
         lsp-print-io nil))
