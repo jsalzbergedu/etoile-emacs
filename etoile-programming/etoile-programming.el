@@ -590,7 +590,7 @@ allows java-project-mode-global to be activated.")
   :defer t)
 
 ;; Scala
-(use-package ensime-sbt-mode
+(use-package sbt-mode
   :straight (ensime-sbt-mode
              :type git
              :host github
