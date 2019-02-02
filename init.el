@@ -14,6 +14,8 @@
 (push "lib" straight-default-files-directive)
 (straight-use-package 'use-package)
 
+(require 'bind-key)
+
 (use-package etoile
   :straight (etoile :type git
                     :host github
