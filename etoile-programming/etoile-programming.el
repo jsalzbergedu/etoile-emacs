@@ -74,9 +74,9 @@
     (ansi-color-apply-on-region compilation-filter-start (point))
     (toggle-read-only))
   (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-
-  :bind (:map compilation-mode-map
-	      ("SPC" . nil)))
+  :general
+  (:keymaps '(compilation-mode-map)
+            "SPC" nil))
 
 ;; Prettify symbols
 (use-package prettify-utils
