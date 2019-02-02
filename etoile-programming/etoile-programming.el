@@ -1148,7 +1148,7 @@ allows rust-project-mode-global to be activated.")
 				       'idris-ipkg-mode-hook))
 
 ;; Ruby
-(use-package enh-ruby-mode
+(use-package ruby-mode
   :defer t
   :straight (enh-ruby-mode :type git
                            :host github
