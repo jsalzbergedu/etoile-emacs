@@ -728,18 +728,6 @@ allows rust-project-mode-global to be activated.")
                            :host github
                            :repo "flycheck/flycheck-rust"))
 
-(use-package lsp-rust
-  :defer t
-  :after lsp-mode
-  :straight (lsp-rust :type git
-                      :host github
-                      :repo "emacs-lsp/lsp-rust")
-  :init
-  (add-hook 'rust-mode-hook #'lsp)
-  (add-hook 'rust-mode-hook #'flycheck-mode)
-  (setq lsp-rust-rls-command '("rustup" "run" "nightly" "rls")))
-
-
 (use-package cargo
   :defer t
   :straight (cargo :type git
