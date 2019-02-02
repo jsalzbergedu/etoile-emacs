@@ -708,6 +708,7 @@ allows rust-project-mode-global to be activated.")
   (add-hook 'rust-mode-hook 'prog-minor-modes-common)
   (add-hook 'rust-mode-hook (lambda ()
                               (add-to-list 'flycheck-checkers 'lsp-ui)))
+  (add-hook 'rust-mode-hook 'lsp)
 
   (project-hydra hydra-rust
     :test cargo-process-test
