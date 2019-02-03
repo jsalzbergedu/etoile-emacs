@@ -86,12 +86,17 @@
   (display-time-mode 1))
 
 ;; Use nice looking colors
-(use-package flatui-theme
-  :straight (flatui-theme :type git
-                          :host github
-                          :repo "john2x/flatui-theme.el")
+;; (use-package flatui-theme
+;;   :straight (flatui-theme :type git
+;;                           :host github
+;;                           :repo "john2x/flatui-theme.el")
+;;   :demand t
+;;   :config (load-theme 'flatui t))
+
+(use-package doom-themes
+  :straight t
   :demand t
-  :config (load-theme 'flatui t))
+  :config (load-theme 'doom-nord-light t))
 
 ;; TODO: MOVE TO LSP-UI
 ;; (set-face-attribute 'lsp-ui-sideline-code-action nil

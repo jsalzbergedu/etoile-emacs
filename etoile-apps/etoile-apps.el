@@ -137,17 +137,22 @@ Inserted by installing org-mode or when a release is made."
 (use-package erc
   :straight t
   :init
-  (setq erc-autojoin-channels-alist (list (cons "freenode.net" (list "#stratis-storage" "#scheme")) (cons "mozilla.org" (list "#rust" "#rust-beginners" "#servo"))))
+  ;; (setq erc-autojoin-channels-alist (list (cons "freenode.net" (list "#stratis-storage" "#scheme")) (cons "mozilla.org" (list "#rust" "#rust-beginners" "#servo"))))
+  ;; The above line got annoying
   (setq erc-prompt (concat "<jcob>:"))
   (defun my-erc-connect ()
     "Connect to the IRC servers I usually connect to"
     (interactive)
-    (erc :server "irc.freenode.net"
-         :port 6667
+    ;; (erc :server "irc.freenode.net"
+    ;;      :port 6667
+    ;;      :nick "jcob"
+    ;;      :password (passwords-get 'irc)
+    ;;      :full-name "Jacob Salzberg")
+    ;; (erc :server "irc.mozilla.org" :port 6667 :nick "jcob" :full-name "Jacob Salzberg"))
+    (erc :server "localhost" :port 5008
          :nick "jcob"
          :password (passwords-get 'irc)
          :full-name "Jacob Salzberg")
-    (erc :server "irc.mozilla.org" :port 6667 :nick "jcob" :full-name "Jacob Salzberg"))
   (setq erc-autojoin-mode t
         erc-button-mode t
         erc-fill-mode t
