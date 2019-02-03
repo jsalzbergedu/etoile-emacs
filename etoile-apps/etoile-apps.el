@@ -151,7 +151,7 @@ Inserted by installing org-mode or when a release is made."
     ;; (erc :server "irc.mozilla.org" :port 6667 :nick "jcob" :full-name "Jacob Salzberg"))
     (erc :server "localhost" :port 5008
          :nick "jcob"
-         :password (passwords-get 'irc)
+         ;; :password (passwords-get 'irc)
          :full-name "Jacob Salzberg"))
   (setq erc-autojoin-mode t
         erc-button-mode t
