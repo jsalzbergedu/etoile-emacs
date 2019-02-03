@@ -152,7 +152,7 @@ Inserted by installing org-mode or when a release is made."
     (erc :server "localhost" :port 5008
          :nick "jcob"
          :password (passwords-get 'irc)
-         :full-name "Jacob Salzberg")
+         :full-name "Jacob Salzberg"))
   (setq erc-autojoin-mode t
         erc-button-mode t
         erc-fill-mode t
