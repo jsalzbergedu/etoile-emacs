@@ -781,9 +781,11 @@ allows rust-project-mode-global to be activated.")
   :defer t
   :commands realgud:gdb
   :config
-  ;; I would really like to be able to set this to nil,
-  ;; but doing so crashes emacs
-  (setq realgud-bp-use-fringe t))
+  (defun +realgud/bp-add-margin-indicator-advice (f &rest args)
+    ;; do nothing
+    )
+  (advice-add 'realgud-bp-add-margin-indicator :around #'+realgud/bp-add-margin-indicator-advice)
+  (setq realgud-bp-use-fringe nil))
 
 (use-package cmake-mode
   :defer t
