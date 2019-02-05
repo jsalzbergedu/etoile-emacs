@@ -1232,6 +1232,10 @@ allows rust-project-mode-global to be activated.")
 
 ;; TODO: Build EmmyLua automatically
 ;; Lua mode
+(defun emmylua--progress-report-handler (workspace params)
+  "Handle the method emmy/progressReport.
+Currently does nothing.")
+
 (lsp-register-client
  (make-lsp-client :new-connection
                   (lsp-stdio-connection
@@ -1240,6 +1244,7 @@ allows rust-project-mode-global to be activated.")
                     "-cp"
                     (expand-file-name "EmmyLua-LS-all.jar" user-emacs-directory)
                     "com.tang.vscode.MainKt"))
+                  :notification-handlers (lsp-ht ("emmy/progressReport" #'emmylua--progress-report-handler))
                   :major-modes '(lua-mode)
                   :server-id 'emmy-lua))
 
