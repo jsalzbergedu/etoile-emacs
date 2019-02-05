@@ -201,5 +201,17 @@ Inserted by installing org-mode or when a release is made."
 
 ;; Get back to exwm later
 
+(use-package exwm
+  :straight t
+  :defer t)
+
+(use-package exwm-config
+  :demand t
+  :after (exwm)
+  :config
+  (advice-add 'exwm-config-ido :override (lambda () t))
+  (push (cons (kbd "<escape>") #'evil-normal-state) exwm-input-global-keys)
+  :commands exwm-config-default)
+
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here

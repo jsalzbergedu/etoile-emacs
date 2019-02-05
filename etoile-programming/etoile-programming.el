@@ -1276,5 +1276,11 @@ Currently does nothing.")
   :straight t
   :hook ((yaml-mode . prog-minor-modes-common)))
 
+;; Vimrc files (needed for my tridactyl config)
+(use-package vimrc-mode
+  :defer t
+  :straight t
+  :hook ((vimrc . prog-minor-modes-common)))
+
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here
