@@ -1201,11 +1201,13 @@ allows rust-project-mode-global to be activated.")
                           :host github
                           :repo "haskell/haskell-mode")
   :init (setq haskell-process-type 'stack-ghci)
+  :hook ((haskell . prog-minor-modes-common))
   :defer t)
 
 (use-package lsp-haskell
   :straight t
-  :defer t
+  :demand t
+  :after haskell-mode
   :hook ((haskell-mode . lsp)))
 
 (use-package inf-haskell
