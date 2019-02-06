@@ -1203,6 +1203,11 @@ allows rust-project-mode-global to be activated.")
   :init (setq haskell-process-type 'stack-ghci)
   :defer t)
 
+(use-package lsp-haskell
+  :straight t
+  :defer t
+  :hook ((haskell-mode . lsp)))
+
 (use-package inf-haskell
   :straight nil
   :demand t
