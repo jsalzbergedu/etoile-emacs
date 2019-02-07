@@ -50,13 +50,60 @@
   :general
   (:keymaps '(normal motion)
             "SPC" nil
-            "SPC l" 'windmove-right
-            "SPC h" 'windmove-left
-            "SPC k" 'windmove-up
-            "SPC j" 'windmove-down
+            "SPC l" 'windmove-cf-right
+            "SPC h" 'windmove-cf-left
+            "SPC k" 'windmove-cf-up
+            "SPC j" 'windmove-cf-down
             "SPC q" 'kill-this-buffer
             "SPC a" 'switch-to-buffer
             "SPC SPC" '+emacs/search))
+
+;; TODO move this to a + package
+;; Either move across emacs windows or stumpwm windows
+(defun windmove-plain (dir)
+  "Moves window focus in direction DIR"
+  (interactive "sDIR: ")
+  (cond
+   ((string= "up" dir) (windmove-up))
+   ((string= "down" dir) (windmove-down))
+   ((string= "left" dir) (windmove-left))
+   ((windmove-right) t)
+   (t nil)))
+
+(defun stump-move (dir)
+  "Move stumpwm focus in direction DIR"
+  (interactive "sDIR: ")
+  (when (f-file-p "~/.local/bin/stumpish")
+    (make-process :name "windmove" :buffer nil :command
+                  (list "stumpish"
+                        (concat "move-focus " dir)))))
+
+
+(defun windmove-or-change-focus (dir)
+  "Windmoves or moves stumpwms focus in direction DIR"
+  (interactive "sDIR: ")
+  (unless (ignore-errors (windmove-plain dir))
+    (stump-move dir)))
+
+(defun windmove-cf-right ()
+  (interactive)
+  "Move or window or stumpwm focus right"
+  (windmove-or-change-focus "right"))
+
+(defun windmove-cf-left ()
+  (interactive)
+  "Move or window or stumpwm focus left"
+  (windmove-or-change-focus "left"))
+
+(defun windmove-cf-up ()
+  (interactive)
+  "Move or window or stumpwm focus up"
+  (windmove-or-change-focus "up"))
+
+(defun windmove-cf-down ()
+  (interactive)
+  "Move or window or stumpwm focus down"
+  (windmove-or-change-focus "down"))
 
 (use-package evil-collection
   :demand t
