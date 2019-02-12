@@ -1117,6 +1117,10 @@ allows rust-project-mode-global to be activated.")
   (add-hook 'c-mode-hook #'+ccls/enable-with-lens)
   (evil-define-key 'normal c-mode-map (kbd "SPC p") #'hydra-c/body))
 
+(projectile-register-project-type 'ccls '(".ccls-root")
+                  :compile "make"
+                  :test "make test")
+
 ;; Json
 (use-package json-mode
   :defer t

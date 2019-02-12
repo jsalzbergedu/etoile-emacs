@@ -199,6 +199,13 @@ Inserted by installing org-mode or when a release is made."
             "K" 'pdf-view-enlarge)
   :commands pdf-view-mode)
 
+;; eww
+(use-package eww
+  :straight nil
+  :defer t
+  :config
+  (add-hook 'eww-mode-hook (lambda () (setq word-wrap t))))
+
 ;; Get back to exwm later
 
 (use-package exwm
