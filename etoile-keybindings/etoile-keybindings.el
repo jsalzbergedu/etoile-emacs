@@ -56,7 +56,8 @@
             "SPC j" 'windmove-cf-down
             "SPC q" 'kill-this-buffer
             "SPC a" 'switch-to-buffer
-            "SPC SPC" '+emacs/search))
+            "SPC SPC" '+emacs/search
+            "/" 'swiper))
 
 ;; TODO move this to a + package
 ;; Either move across emacs windows or stumpwm windows
