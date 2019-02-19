@@ -96,7 +96,7 @@
 (use-package doom-themes
   :straight t
   :demand t
-  :config (load-theme 'doom-nord-light t))
+  :config (load-theme 'doom-one-light t))
 
 ;; TODO: MOVE TO LSP-UI
 ;; (set-face-attribute 'lsp-ui-sideline-code-action nil
