@@ -1293,5 +1293,13 @@ Currently does nothing.")
   :straight t
   :hook ((vimrc . prog-minor-modes-common)))
 
+;; Ocaml
+(use-package tuareg
+  :straight t
+  :defer t
+  :hook ((tuareg . prog-minor-modes-common)
+         (tuareg . lsp)
+         (tuareg-interactive-mode . prog-minor-modes-common)))
+
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here
