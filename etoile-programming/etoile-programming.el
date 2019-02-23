@@ -794,6 +794,14 @@ allows rust-project-mode-global to be activated.")
   (add-hook 'cmake-mode-hook 'prog-minor-modes-common))
 
 ;; TODO: Move all the c++ stuff into + packages
+(use-package clang-format
+  :straight t
+  :defer t)
+
+(use-package cdecl
+  :straight t
+  :defer t
+  :commands (cdecl-explain cdecl-explain-region))
 
 (use-package flycheck-vera
   :demand t
@@ -1294,12 +1302,21 @@ Currently does nothing.")
   :hook ((vimrc . prog-minor-modes-common)))
 
 ;; Ocaml
+(use-package dune
+  :straight (dune :type git
+                  :host github
+                  :repo "ocaml/dune"
+                  :files ("editor-integration/emacs/*.el"))
+  :defer t
+  :hook ((dune-mode . prog-minor-modes-common)))
+
 (use-package tuareg
   :straight t
   :defer t
-  :hook ((tuareg . prog-minor-modes-common)
-         (tuareg . lsp)
-         (tuareg-interactive-mode . prog-minor-modes-common)))
+  :hook ((tuareg-mode . prog-minor-modes-common)
+         (tuareg-mode . lsp)
+         (tuareg-interactive-mode . prog-minor-modes-common)
+         (tuareg-opam-mode . prog-minor-modes-common)))
 
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here
