@@ -1319,5 +1319,10 @@ Currently does nothing.")
          (tuareg-interactive-mode . prog-minor-modes-common)
          (tuareg-opam-mode . prog-minor-modes-common)))
 
+;; Nix expression language
+(use-package nix-mode
+  :straight t
+  :defer t)
+
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here
