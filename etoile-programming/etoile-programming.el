@@ -1322,7 +1322,8 @@ Currently does nothing.")
 ;; Nix expression language
 (use-package nix-mode
   :straight t
-  :defer t)
+  :defer t
+  :hook ((nix-mode . prog-minor-modes-common)))
 
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here

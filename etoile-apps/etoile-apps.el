@@ -220,5 +220,10 @@ Inserted by installing org-mode or when a release is made."
   (push (cons (kbd "<escape>") #'evil-normal-state) exwm-input-global-keys)
   :commands exwm-config-default)
 
+;; Direnv
+(use-package direnv
+  :straight t
+  :demand t)
+
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here
