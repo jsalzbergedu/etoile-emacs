@@ -223,7 +223,9 @@ Inserted by installing org-mode or when a release is made."
 ;; Direnv
 (use-package direnv
   :straight t
-  :demand t)
+  :demand t
+  :config
+  (direnv-mode))
 
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here
