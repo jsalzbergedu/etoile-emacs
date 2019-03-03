@@ -37,22 +37,56 @@
 
 ;; Text editing
 (set-face-attribute 'fixed-pitch nil
-                    :family "Inconsolata")
+                    :family "Inconsolata LGC")
 
 (set-face-attribute 'default nil
-                    :height 113
-                    :family "Inconsolata"
+                    :height 100
+                    :family "Inconsolata LGC"
                     :foundry "PfEd")
+
+(defface etoile-themes-linum-fira '((t :inherit linum :family "Fira Mono"))
+  "Face for displaying characters in fira mono")
+
 (add-to-list 'default-frame-alist '(font-backend "xft"))
 
-;; Fix box building characters
-(defun fix-box-building (&optional frame)
-  "Sets a fallback font to make the box-building characters look right"
-  (set-fontset-font "fontset-default" '(#x2502 . #x2502) "Fira Mono" frame)
-  (redisplay t))
-(add-hook 'after-make-frame-functions 'fix-box-building)
-(add-hook 'window-setup-hook 'fix-box-building)
+(use-package nlinum
+  :straight t
+  :demand t
+  :config
+  (setq nlinum-format "%4d │ ")
+  (setq nlinum-format-function
+        (lambda (line width)
+          (let* ((is-current-line (= line nlinum--current-line))
+                 (str (format nlinum-format line)))
+            (when (< (length str) width)
+              ;; Left pad to try and right-align the line-numbers.
+              (setq str (concat (make-string (- width (length str)) ?\ ) str)))
+            (put-text-property 0 (- width 2) 'face
+                               'linum
+                               str)
+	    (put-text-property (- width 2) (- width 1) 'face 'etoile-themes-linum-fira str)
+	    (put-text-property (- width 1) width 'face 'linum str)
+            ; (setq str (concat str " "
+            ;                   (propertize "│" 'face 'etoile-themes-linum-fira)
+            ;                   " "))
+            str))))
 
+;; (use-package nlinum-hl
+;;   :straight (emacs-nlinum-hl :type git
+;;                              :host github
+;;                              :repo "hlissner/emacs-nlinum-hl")
+;;   :after nlinum
+;;   :demand t)
+
+;; Fix box building characters
+;; (defun fix-box-building (&optional frame)
+;;   "Sets a fallback font to make the box-building characters look right"
+;;   (set-fontset-font "fontset-default" '(#x2502 . #x2502) "Fira Mono" frame)
+;;   (redisplay t))
+;; (add-hook 'after-make-frame-functions 'fix-box-building)
+;; (add-hook 'window-setup-hook 'fix-box-building)
+
+;; (set-fontset-font "-PfEd-Inconsolata LGC-normal-normal-normal-*-16-*-*-*-m-0-fontset-auto2" '(#x2502 . #x2502) "Fira Mono" (car (frame-list)))
 
 ;; Mode line
 (setq display-battery-mode t)

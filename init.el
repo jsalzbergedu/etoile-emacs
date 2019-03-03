@@ -22,3 +22,5 @@
                     :repo "jsalzbergedu/etoile-emacs"
                     :files ("etoile-emacs/*.el"))
   :demand t)
+
+(message "Reached end of init file")

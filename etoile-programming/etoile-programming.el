@@ -44,6 +44,9 @@
   "Add prog-minor-modes-common to MODE-HOOKS"
   (mapc (lambda (a) (add-hook a 'prog-minor-modes-common)) mode-hooks))
 
+;;;###autoload
+(add-hook 'prog-minor-modes-common 'nlinum-mode)
+
 ;; Whitespace detection
 (defun show-trailing-whitespace ()
   (interactive)
@@ -1324,6 +1327,10 @@ Currently does nothing.")
   :straight t
   :defer t
   :hook ((nix-mode . prog-minor-modes-common)))
+
+(use-package nixos-options
+  :straight t
+  :defer t)
 
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here

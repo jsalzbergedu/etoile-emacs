@@ -42,7 +42,5 @@
 ;; Enable some disabled methods
 (put 'upcase-region 'disabled nil)
 
-
-
 (provide '+emacs)
 ;;; +emacs.el ends here
