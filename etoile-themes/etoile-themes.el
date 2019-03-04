@@ -41,7 +41,7 @@
 
 (set-face-attribute 'default nil
                     :height 100
-                    :family "Inconsolata LGC"
+                    :family "DejaVu Sans Mono"
                     :foundry "PfEd")
 
 (defface etoile-themes-linum-fira '((t :inherit linum :family "Fira Mono"))

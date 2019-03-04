@@ -221,11 +221,11 @@ Inserted by installing org-mode or when a release is made."
   :commands exwm-config-default)
 
 ;; Direnv
-(use-package direnv
-  :straight t
-  :demand t
-  :config
-  (direnv-mode))
+;; (use-package direnv
+;;   :straight t
+;;   :demand t
+;;   :config
+;;   (direnv-mode))
 
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here
