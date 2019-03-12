@@ -143,16 +143,8 @@ Inserted by installing org-mode or when a release is made."
   (defun my-erc-connect ()
     "Connect to the IRC servers I usually connect to"
     (interactive)
-    ;; (erc :server "irc.freenode.net"
-    ;;      :port 6667
-    ;;      :nick "jcob"
-    ;;      :password (passwords-get 'irc)
-    ;;      :full-name "Jacob Salzberg")
-    ;; (erc :server "irc.mozilla.org" :port 6667 :nick "jcob" :full-name "Jacob Salzberg"))
-    (erc :server "localhost" :port 5008
-         :nick "jcob"
-         ;; :password (passwords-get 'irc)
-         :full-name "Jacob Salzberg"))
+    (erc-tls :server "192.168.1.24" :port 5006
+             :nick "jcob"))
   (setq erc-autojoin-mode t
         erc-button-mode t
         erc-fill-mode t

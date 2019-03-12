@@ -1332,5 +1332,14 @@ Currently does nothing.")
   :straight t
   :defer t)
 
+;; Pseudocode
+(use-package pseudocode-mode
+  :straight (pseudocode-mode :type git
+                             :host github
+                             :repo "jsalzbergedu/pseudocode-mode")
+  :defer t
+  :hook ((java-mode . pseudocode-comment-mode)
+         (pseudocode-mode . prog-minor-modes-common)))
+
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here

@@ -37,7 +37,7 @@
 
 ;; Text editing
 (set-face-attribute 'fixed-pitch nil
-                    :family "Inconsolata LGC")
+                    :family "Inconsolata")
 
 (set-face-attribute 'default nil
                     :height 100
