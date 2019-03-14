@@ -42,5 +42,8 @@
 ;; Enable some disabled methods
 (put 'upcase-region 'disabled nil)
 
+;; Increase recentf size
+(setq recentf-max-saved-items 100)
+
 (provide '+emacs)
 ;;; +emacs.el ends here
