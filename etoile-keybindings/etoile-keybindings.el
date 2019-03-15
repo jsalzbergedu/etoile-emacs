@@ -59,6 +59,14 @@
             "SPC SPC" '+emacs/search
             "/" 'swiper))
 
+(use-package evil-surround
+  :straight t
+  :config
+  (push '(?\( . ("(" . ")")) evil-surround-pairs-alist)
+  (push '(?\[ . ("[" . "]")) evil-surround-pairs-alist)
+  (push '(?\{ . ("{" . "}")) evil-surround-pairs-alist)
+  (global-evil-surround-mode 1))
+
 ;; TODO move this to a + package
 ;; Either move across emacs windows or stumpwm windows
 (defun windmove-plain (dir)

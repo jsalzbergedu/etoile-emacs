@@ -37,7 +37,7 @@
 
 ;; Text editing
 (set-face-attribute 'fixed-pitch nil
-                    :family "Inconsolata")
+                    :family "DejaVu Sans Mono")
 
 (set-face-attribute 'default nil
                     :height 100
