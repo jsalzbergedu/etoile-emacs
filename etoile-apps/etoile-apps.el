@@ -48,6 +48,18 @@
   :straight t
   :defer t)
 
+(use-package ob-pie
+  :straight (ob-pie :type git
+                    :host github
+                    :repo "jsalzbergedu/ob-pie")
+  :defer t)
+
+(use-package ob-racket
+  :straight (ob-racket :type git
+                       :host github
+                       :repo "wallyqs/ob-racket")
+  :defer t)
+
 (defun org-git-version ()
   "The Git version of org-mode.
 Inserted by installing org-mode or when a release is made."
@@ -95,7 +107,9 @@ Inserted by installing org-mode or when a release is made."
                                                            (scheme . t)
                                                            (scala . t)
                                                            (coq . t)
-                                                           (haskell . t)))
+                                                           (haskell . t)
+                                                           (racket . t)
+                                                           (pie . t)))
   :commands org-mode)
 
 (use-package ob-plantuml
@@ -143,8 +157,7 @@ Inserted by installing org-mode or when a release is made."
   (defun my-erc-connect ()
     "Connect to the IRC servers I usually connect to"
     (interactive)
-    (erc-tls :server "192.168.1.24" :port 5006
-             :nick "jcob"))
+    (erc-tls :server "3.82.54.165" :port 5006))
   (setq erc-autojoin-mode t
         erc-button-mode t
         erc-fill-mode t
@@ -168,6 +181,9 @@ Inserted by installing org-mode or when a release is made."
   :general
   (:keymaps '(ansi-term) :states '(normal motion)
             "p" 'term-paste)
+  :init
+  (setq comint-move-point-for-output nil)
+  (setq comint-scroll-show-maximum-output nil)
   :config (add-hook 'term-mode-hook (lambda ()
 				      (evil-local-set-key 'normal (kbd "p") 'term-paste))))
 
@@ -211,6 +227,17 @@ Inserted by installing org-mode or when a release is made."
   (advice-add 'exwm-config-ido :override (lambda () t))
   (push (cons (kbd "<escape>") #'evil-normal-state) exwm-input-global-keys)
   :commands exwm-config-default)
+
+;; Letter combinations
+(use-package letter-combinator
+  :straight (letter-combinator :type git
+                               :host github
+                               :repo "jsalzbergedu/letter-combinator-emacs")
+  :defer t
+  :init
+  (defvar letter-combinator-combinations '())
+  (push '("c," . "ç") letter-combinator-combinations)
+  (push '("C," . "Ç") letter-combinator-combinations))
 
 ;; Direnv
 ;; (use-package direnv

@@ -203,7 +203,6 @@
 
 (add-hook 'prog-minor-modes-common 'yas-minor-mode)
 (add-hook 'prog-minor-modes-common 'evil-normalize-keymaps)
-
 ;; Company mode for autocompletion
 
 (use-package company
@@ -679,8 +678,7 @@ allows java-project-mode-global to be activated.")
 				      (geiser-mode)
 				      (prog-minor-modes-common)))
   (setq geiser-chicken-binary "chicken-csi")
-  :config (progn (setq geiser-active-implementations '(chicken))
-		 (add-prog-minor-modes-common 'scheme-mode-hook 'geiser-repl-mode-hook)
+  :config (progn (add-prog-minor-modes-common 'scheme-mode-hook 'geiser-repl-mode-hook)
                  (add-to-list 'auto-mode-alist '("\\.setup\\'" . scheme-mode))
                  (add-to-list 'auto-mode-alist '("\\.meta\\'" . scheme-mode)))
   :commands geiser-mode)
