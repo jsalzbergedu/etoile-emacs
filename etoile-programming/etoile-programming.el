@@ -798,6 +798,8 @@ allows rust-project-mode-global to be activated.")
 ;; TODO: Move all the c++ stuff into + packages
 (use-package clang-format
   :straight t
+  :init
+  (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
   :defer t)
 
 (use-package cdecl
@@ -870,7 +872,9 @@ allows rust-project-mode-global to be activated.")
   (push "T019" flycheck-vera-rules)
   ;; My own rule:
   ;; Brackets must be in kernel c style
-  (push "LINUXKERNELBRACKETS.py" flycheck-vera-rules))
+  ;; (rendered useless by clang-format)
+  ;; (push "LINUXKERNELBRACKETS.py" flycheck-vera-rules))
+  )
 
 (use-package ccls
   :defer t

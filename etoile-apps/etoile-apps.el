@@ -109,7 +109,8 @@ Inserted by installing org-mode or when a release is made."
                                                            (coq . t)
                                                            (haskell . t)
                                                            (racket . t)
-                                                           (pie . t)))
+                                                           (pie . t)
+                                                           (ein . t)))
   :commands org-mode)
 
 (use-package ob-plantuml
@@ -237,7 +238,28 @@ Inserted by installing org-mode or when a release is made."
   :init
   (defvar letter-combinator-combinations '())
   (push '("c," . "ç") letter-combinator-combinations)
-  (push '("C," . "Ç") letter-combinator-combinations))
+  (push '("C," . "Ç") letter-combinator-combinations)
+  (push '("<<" . "«") letter-combinator-combinations)
+  (push '(">>" . "»") letter-combinator-combinations)
+  (push '("'e" . "è") letter-combinator-combinations)
+  (push '("e'" . "é") letter-combinator-combinations)
+  (push '("'a" . "à") letter-combinator-combinations))
+
+;; Vterm (a real terminal implemented via compile time modules)
+
+(defun +vterm-suggest ()
+  "Suggest to use vterm over (ansi) term"
+  (interactive)
+  (message "Did you mean to use vterm?"))
+
+(use-package vterm
+  :defer t
+  :init (vterm-module-compile)
+  :straight (vterm :type git
+                   :host github
+                   :repo "akermu/emacs-libvterm"
+                   :files ("*"))
+  :hook ((term-mode . +vterm-suggest)))
 
 ;; Direnv
 ;; (use-package direnv
