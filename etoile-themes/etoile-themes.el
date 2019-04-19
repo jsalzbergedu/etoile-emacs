@@ -130,10 +130,10 @@
   :straight t
   :demand t
   :config
-  (load-theme 'doom-nord-light t)
+  (load-theme 'doom-one-light t)
   (set-face-attribute 'linum nil
-                      :foreground "#3B4252"
-                      :background "#E5E9F0"))
+                      :foreground "#383a42"
+                      :background "#fafafa"))
 
 ;; TODO: MOVE TO LSP-UI
 ;; (set-face-attribute 'lsp-ui-sideline-code-action nil
