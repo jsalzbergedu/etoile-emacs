@@ -109,8 +109,9 @@ Inserted by installing org-mode or when a release is made."
                                                            (coq . t)
                                                            (haskell . t)
                                                            (racket . t)
-                                                           (pie . t)
-                                                           (ein . t)))
+                                                           (pie . t)))
+
+  ;;(ein:org-register-lang-mode "ein-c++" 'c++)
   :commands org-mode)
 
 (use-package ob-plantuml

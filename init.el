@@ -24,3 +24,4 @@
   :demand t)
 
 (message "Reached end of init file")
+(put 'narrow-to-region 'disabled nil)

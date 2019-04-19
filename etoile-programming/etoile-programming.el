@@ -373,12 +373,12 @@ _e_: flycheck-list-errors
                       :foreground "white"
                       :box '(:line-width -1 :color "white")
                       :weight 'ultra-bold
-                      :height 0.95)
+                      :height 0.80)
 
   (set-face-attribute 'lsp-ui-sideline-symbol nil
                       :foreground "#7f8c8d"
                       :box '(:line-width -1 :color "#7f8c8d")
-                      :height 0.9)
+                      :height 0.80)
   :commands lsp-ui-mode)
 
 (use-package lsp-ui-flycheck
@@ -410,6 +410,16 @@ _e_: flycheck-list-errors
                             :repo "google/styleguide"
                             :branch "gh-pages"
                             :files ("*.el")))
+
+;; Packages for using jupyter notebooks
+;; (use-package ein
+;;   :defer t
+;;   :straight t
+;;   :commands ein:org-register-lang-mode)
+
+(use-package jupyter
+  :defer t
+  :straight t)
 
 ;; Python:
 (use-package python

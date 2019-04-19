@@ -37,12 +37,11 @@
 
 ;; Text editing
 (set-face-attribute 'fixed-pitch nil
-                    :family "DejaVu Sans Mono")
+                    :font "Inconsolata LGC")
 
 (set-face-attribute 'default nil
                     :height 100
-                    :family "DejaVu Sans Mono"
-                    :foundry "PfEd")
+                    :family "Inconsolata LGC")
 
 (defface etoile-themes-linum-fira '((t :inherit linum :family "Fira Mono"))
   "Face for displaying characters in fira mono")
