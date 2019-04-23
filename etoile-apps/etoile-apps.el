@@ -105,7 +105,6 @@ Inserted by installing org-mode or when a release is made."
   (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)
                                                            (emacs-lisp . t)
                                                            (scheme . t)
-                                                           (scala . t)
                                                            (coq . t)
                                                            (haskell . t)
                                                            (racket . t)

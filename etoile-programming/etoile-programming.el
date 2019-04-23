@@ -147,11 +147,7 @@
   (add-hook 'prog-minor-modes-common 'show-smartparens-mode)
   :general
   (:keymaps '(normal motion)
-            "SPC s" 'sp-forward-slurp-sexp)
-  :bind (:map evil-normal-state-map
-	      ("SPC s" . sp-forward-slurp-sexp)
-	      :map evil-motion-state-map
-	      ("SPC s" . sp-forward-slurp-sexp)))
+            "SPC s" 'sp-forward-slurp-sexp))
 
 (use-package smartparens-config
   :straight nil
@@ -199,7 +195,8 @@
   :straight (yasnippet-snippets :type git
                                 :host github
                                 :repo "AndreaCrotti/yasnippet-snippets"
-                                :files ("yasnippet-snippets.el" "snippets")))
+                                :files ("yasnippet-snippets.el" "snippets"))
+  :config (yasnippet-snippets-initialize))
 
 (add-hook 'prog-minor-modes-common 'yas-minor-mode)
 (add-hook 'prog-minor-modes-common 'evil-normalize-keymaps)
@@ -260,12 +257,40 @@ _j_: company-select-next-or-abort
   :demand t)
 
 ;; Like LSP, but for debuggers
+
+(define-minor-mode +dap-running-session-mode
+  "A mode for adding keybindings to running sessions"
+  nil
+  nil
+  (make-sparse-keymap)
+  (evil-normalize-keymaps)
+  (when +dap-running-session-mode
+    (let ((session-at-creation (dap--cur-active-session-or-die)))
+      (add-hook 'dap-terminated-hook
+                (lambda (session)
+                  (when (eq session session-at-creation)
+                    (+dap-running-session-mode -1)))))))
+
+(add-hook 'dap-session-created-hook '+dap-running-session-mode)
+
+(add-hook 'dap-stopped-hook '+dap-running-session-mode)
+
+(add-hook 'dap-stack-frame-changed-hook (lambda (session)
+                                          (when (dap--session-running session)
+                                            (+dap-running-session-mode 1))))
+
 (use-package dap-mode
   :demand t
   :straight (dap-mode :type git
                       :host github
                       :repo "yyoncho/dap-mode"
-                      :files ("*.el" "icons/eclipse")))
+                      :files ("*.el" "icons/eclipse"))
+  :general
+  (:keymaps '(+dap-running-session-mode-map) :states '(normal motion)
+            "n" 'dap-next
+            "c" 'dap-continue
+            "s" 'dap-step-in
+            "b" 'dap-breakpoint-add))
 
 (use-package dap-ui
   :after dap-mode
@@ -304,8 +329,10 @@ _j_: company-select-next-or-abort
   :straight t
   :init
   (put 'projectile-project-root 'safe-local-variable #'stringp)
+  (put 'projectile-project-type 'safe-local-variable #'symbolp)
   :config
-  (projectile-global-mode 1))
+  (projectile-global-mode 1)
+  (setq projectile-completion-system 'ivy))
 
 (use-package counsel-projectile
   :straight t
@@ -328,6 +355,10 @@ _j_: company-select-next-or-abort
   :general
   (:keymaps '(magit-mode-map magit-diff-mode-map)
             "SPC" nil))
+
+(use-package git-time-machine
+  :straight t
+  :defer t)
 
 ;; Evil-magit, the only way I can use magit
 (use-package evil-magit
@@ -388,20 +419,6 @@ _e_: flycheck-list-errors
                     (lambda () (lsp-ui-flycheck-enable 1))))
 
 
-;; Nlinum to display the line
-(use-package nlinum
-  :straight t
-  :init (add-hook 'prog-minor-modes-common 'nlinum-mode)
-  :config (progn (setq nlinum-format "%4d │ "))
-  :commands nlinum-mode)
-
-(use-package nlinum-hl
-  :straight (emacs-nlinum-hl :type git
-                             :host github
-                             :repo "hlissner/emacs-nlinum-hl")
-  :after nlinum
-  :demand t)
-
 ;; All c-likes
 (use-package google-c-style
   :defer t
@@ -431,6 +448,10 @@ _e_: flycheck-list-errors
 
 ;; Java
 ;; TODO clean these up into + packages
+
+(projectile-register-project-type 'eclipse '(".classpath" ".project")
+                                  :compile 'lsp-java-build-project)
+
 (use-package output-buffer
   :straight (output-buffer :type git
                            :host github
@@ -457,11 +478,12 @@ _e_: flycheck-list-errors
                                :repo "jacobono/emacs-gradle-mode")
   :after elisp-checkstyle)
 
-;; dap-jave sneakily uses cl by using first, most probably
+;; dap-java sneakily uses cl by using first, most probably
 (use-package cl
   :straight nil
   :demand t
   :commands first)
+
 
 (use-package dap-java
   :after (dap-mode lsp-java cl)
@@ -488,30 +510,6 @@ _m_: dap-java-run-test-method"
       (insert "\n")))
   (add-hook 'dap-ui-repl-mode-hook 'evil-normalize-keymaps))
 
-(defvar material-design-icons-repo-location "~/sources/material-design-icons/")
-(defvar treemacs-material-design-icons-alist '())
-(setq treemacs-material-design-icons-alist
-      (-map (lambda (x) (cons (car x) (expand-file-name (cdr x) material-design-icons-repo-location)))
-            '((dir-open . "file/svg/production/ic_folder_open_24px.svg")
-              (dir-closed . "file/svg/production/ic_folder_24px.svg")
-              (node-closed . "navigation/svg/production/ic_expand_less_18px.svg")
-              (node-open . "navigation/svg/production/ic_chevron_right_18px.svg"))))
-
-
-(defvar material-design-icons-community-repo-location "~/sources/MaterialDesign/")
-
-(defvar material-design-icons-community-repo-location "~/sources/MaterialDesign/")
-(defvar treemacs-material-design-icons-community-alist '())
-(setq treemacs-material-design-icons-community-alist
-      (-map (lambda (x) (cons (car x) (expand-file-name (cdr x) material-design-icons-community-repo-location)))
-            '((package . "icons/svg/package.svg")
-              (leaf . "icons/svg/circle-small.svg")
-              (java . "~/sources/MaterialDesign/icons/svg/language-java.svg"))))
-
-(defun cdr-assoc (&rest args)
-  "Get the CDR of the ASSOC'd list"
-  (cdr (apply #'assoc args)))
-
 ;; (defmacro setup-icons (&rest icon-list)
 ;;   "Set up all the icons, turning a into the icon repo location
 ;; and b into the community repo location.
@@ -525,14 +523,6 @@ _m_: dap-java-run-test-method"
 (use-package treemacs
   :straight t
   :config
-  (treemacs--setup-icon treemacs-icon-tag-node-closed-png (cdr-assoc 'node-closed treemacs-material-design-icons-alist))
-  (treemacs--setup-icon treemacs-icon-tag-node-open-png (cdr-assoc 'node-open treemacs-material-design-icons-alist))
-  (treemacs--setup-icon treemacs-icon-open-png (cdr-assoc 'dir-open treemacs-material-design-icons-alist))
-  (treemacs--setup-icon treemacs-icon-closed-png (cdr-assoc 'dir-closed treemacs-material-design-icons-alist))
-  (treemacs--setup-icon treemacs-icon-tag-leaf-png (cdr-assoc 'leaf treemacs-material-design-icons-community-alist))
-  (treemacs--setup-icon treemacs-icon-root-png (cdr-assoc 'package treemacs-material-design-icons-community-alist))
-  (treemacs--setup-icon treemacs-icon-java (cdr-assoc 'java
-                                                      treemacs-material-design-icons-community-alist) "java")
   (setq treemacs-git-mode 'simple)
   (add-hook 'treemacs-mode-hook (lambda () (setq-local truncate-lines t)))
   :commands treemacs--setup-icon)
@@ -624,14 +614,20 @@ allows java-project-mode-global to be activated.")
   :config (progn (add-hook 'scala-mode-hook 'prog-minor-modes-common)
 		 (setq scala-indent:add-space-for-scaladoc-asterisk nil)))
 
-(use-package ensime
-  :straight (ensime :type git
-                    :host github
-                    :repo "ensime/ensime-emacs"
-                    :branch "2.0")
-  :defer t
-  :commands ensime
-  :config (setq ensime-startup-notification nil))
+;; (use-package ensime
+;;   :straight (ensime :type git
+;;                     :host github
+;;                     :repo "ensime/ensime-emacs"
+;;                     :branch "2.0")
+;;   :defer t
+;;   :commands ensime
+;;   :config (setq ensime-startup-notification nil))
+
+(use-package lsp-scala
+  :after scala-mode
+  :demand t
+  :straight t
+  :hook ((scala-mode . lsp)))
 
 ;; Elisp:
 (use-package exec-path-from-shell
@@ -810,6 +806,7 @@ allows rust-project-mode-global to be activated.")
   :straight t
   :init
   (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
+  (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
   :defer t)
 
 (use-package cdecl
@@ -1352,6 +1349,12 @@ Currently does nothing.")
   :defer t
   :hook ((java-mode . pseudocode-comment-mode)
          (pseudocode-mode . prog-minor-modes-common)))
+
+;; NASM
+(use-package nasm-mode
+  :defer t
+  :straight t
+  :hook ((nasm-mode . prog-minor-modes-common)))
 
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here
