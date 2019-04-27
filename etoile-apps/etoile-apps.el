@@ -94,6 +94,7 @@ Inserted by installing org-mode or when a release is made."
   :init
   (straight-use-package 'org-plus-contrib)
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+  (setq org-default-notes-file "~/.emacs.d/notes.org")
   :config
   (setq org-indent-indentation-per-level 1
 	org-ellipsis ":"
@@ -111,7 +112,8 @@ Inserted by installing org-mode or when a release is made."
                                                            (pie . t)))
 
   ;;(ein:org-register-lang-mode "ein-c++" 'c++)
-  :commands org-mode)
+  ;; (require 'org-mks) ;; for some reason capture doesnt work without this
+  :commands (org-mode org-capture))
 
 (use-package ob-plantuml
   :init
@@ -242,8 +244,11 @@ Inserted by installing org-mode or when a release is made."
   (push '("<<" . "«") letter-combinator-combinations)
   (push '(">>" . "»") letter-combinator-combinations)
   (push '("'e" . "è") letter-combinator-combinations)
+  (push '("'E" . "È") letter-combinator-combinations)
   (push '("e'" . "é") letter-combinator-combinations)
-  (push '("'a" . "à") letter-combinator-combinations))
+  (push '("e'" . "É") letter-combinator-combinations)
+  (push '("'a" . "à") letter-combinator-combinations)
+  (push '("'u" . "ù") letter-combinator-combinations))
 
 ;; Vterm (a real terminal implemented via compile time modules)
 
@@ -260,6 +265,33 @@ Inserted by installing org-mode or when a release is made."
                    :repo "akermu/emacs-libvterm"
                    :files ("*"))
   :hook ((term-mode . +vterm-suggest)))
+
+
+(use-package mu4e
+  :straight nil
+  :load-path "/usr/share/emacs/site-lisp/mu4e/"
+  :defer t
+  :config
+  (setq mu4e-maildir "~/.mail")
+  (setq mu4e-completing-read-function 'ivy-completing-read))
+
+(use-package org-mu4e
+  :straight nil
+  :demand t
+  :after mu4e)
+
+(defun +mu4e ()
+  "Run mu4e"
+  (require 'mu4e)
+  (interactive)
+  (shell-command "mbsync personal")
+  (shell-command "mbsync ncsu")
+  (shell-command "mu index --maildir=~/.mail/")
+  (mu4e))
+
+(use-package webpaste
+  :straight t
+  :defer t)
 
 ;; Direnv
 ;; (use-package direnv
