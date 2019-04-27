@@ -449,8 +449,8 @@ _e_: flycheck-list-errors
 ;; Java
 ;; TODO clean these up into + packages
 
-(projectile-register-project-type 'eclipse '(".classpath" ".project")
-                                  :compile 'lsp-java-build-project)
+;; (projectile-register-project-type 'eclipse '(".classpath" ".project")
+;;                                   :compile 'lsp-java-build-project)
 
 (use-package output-buffer
   :straight (output-buffer :type git
@@ -528,13 +528,6 @@ _m_: dap-java-run-test-method"
   :commands treemacs--setup-icon)
 
 
-(define-minor-mode java-project-mode
-  "A mode which is activated whenever the java-project variable is t."
-  :lighter ""
-  :keymap (make-sparse-keymap))
-
-(add-hook 'java-project-mode-hook 'evil-normalize-keymaps)
-
 (project-hydra hydra-java
   :test dap-java-testrun-hydra/body
   :compile lsp-java-build-project
@@ -549,20 +542,6 @@ _m_: dap-java-run-test-method"
   :and ("f" xref-find-definitions)
   :and ("o" toggle-dap))
 
-;; (evil-define-key 'normal java-project-mode-map (kbd "SPC p") 'hydra-java/body)
-
-(defvar-local is-java-project nil "A local variable that, when set to t,
-allows java-project-mode-global to be activated.")
-
-(put 'is-java-project 'safe-local-variable #'booleanp)
-
-(define-globalized-minor-mode java-project-mode-global java-project-mode
-  (lambda ()
-    (when (or (locate-dominating-file default-directory "pom.xml")
-              (locate-dominating-file default-directory ".classpath")
-              is-java-project)
-        (java-project-mode 1))))
-
 
 (use-package lsp-java
   :demand t
@@ -571,7 +550,6 @@ allows java-project-mode-global to be activated.")
                       :repo "emacs-lsp/lsp-java"
                       :files ("*.el" "icons" "install"))
   :config
-  (java-project-mode-global 1)
   (progn (add-hook 'java-mode-hook 'prog-minor-modes-common)
 	 (add-hook 'java-mode-hook 'lsp)
 	 (add-hook 'java-mode-hook (lambda ()
@@ -690,28 +668,6 @@ allows java-project-mode-global to be activated.")
   :commands geiser-mode)
 
 ;; Rust:
-(define-minor-mode rust-project-mode
-  "A mode which is activated whenever the is-rust-project variable is t."
-  :lighter ""
-  :keymap (make-sparse-keymap))
-
-(add-hook 'rust-project-mode-hook 'evil-normalize-keymaps)
-
-(evil-define-key 'normal rust-project-mode-map (kbd "SPC p") 'hydra-rust/body)
-
-(defvar-local is-rust-project nil "A local variable that, when set to t,
-allows rust-project-mode-global to be activated.")
-
-(put 'is-rust-project 'safe-local-variable #'booleanp)
-
-(define-globalized-minor-mode rust-project-mode-global rust-project-mode
-  (lambda ()
-    (when (or (locate-dominating-file default-directory "Cargo.toml")
-              is-rust-project)
-        (rust-project-mode 1))))
-
-(rust-project-mode-global 1)
-
 (use-package rust-mode
   :defer t
   :straight (rust-mode :type git
