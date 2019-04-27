@@ -137,6 +137,11 @@ Inserted by installing org-mode or when a release is made."
 (use-package tramp
   :straight nil
   :defer t
+  :init
+  (defun sudo-edit ()
+    "Edit with sudo"
+    (interactive)
+    (find-alternate-file (concat "/sudo::" buffer-file-name)))
   :config
   (setq tramp-auto-save-directory "~/.emacs.d/tramp-auto-saves")
   (add-to-list 'backup-directory-alist
