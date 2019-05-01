@@ -25,6 +25,62 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'projectile)
+(require 'counsel-projectile)
+(require 'subr-x)
+(require 'hydra)
+(require 'lsp-ui)
+
+(defvar +projectile-local-commands '()
+  "An alist of plists mapping project types to commands used on a project.")
+
+(defun +projectile-get-local-command (command)
+  "Using a project of type TYPE, get the COMMAND."
+  (plist-get (alist-get (projectile-project-type) +projectile-local-commands) command))
+
+(defun +projectile-test-hydra ()
+  "Open the test hydra for the mode"
+  (interactive)
+  (funcall (+projectile-get-local-command :test-hydra)))
+
+(defun +projectile-compile ()
+  "Compile the project"
+  (interactive)
+  (funcall (+projectile-get-local-command :compile)))
+
+(defun +projectile-code-action ()
+  "Compile the project"
+  (interactive)
+  (funcall (+projectile-get-local-command :code-action)))
+
+(defhydra +projectile-flycheck-hydra (:hint nil :color blue)
+    "
+_n_: flycheck-next-error
+_N_: flycheck-previous-error
+_e_: flycheck-list-errors
+"
+    ("n" flycheck-next-error :color pink)
+    ("N" flycheck-previous-error :color pink)
+    ("e" flycheck-list-errors :color blue))
+
+(defhydra +projectile-hydra (:hint nil :color blue)
+    "
+^Project Operations^          ^Local Operations^            ^Navigation^
+^------------------^--------+-^----------------^----------+-^----------^---------------------------------
+_t_: +projectile-test-hydra | _a_ +projectile-code-action | _g_ counsel-projectile-rg
+_c_: +projectile-compile    | ^ ^                         | _p_ counsel-projectile-find-file
+^ ^                         | ^ ^                         | _f_ xref-find-definitions
+^ ^                         | ^ ^                         | _d_ xref-find-definitions-other-window
+^ ^                         | ^ ^                         | _e_ +projectile-flycheck-hydra
+"
+    ("t" +projectile-test-hydra)
+    ("c" +projectile-compile)
+    ("g" counsel-projectile-rg)
+    ("p" counsel-projectile-find-file)
+    ("f" xref-find-definitions)
+    ("d" xref-find-definitions-other-window)
+    ("e" +projectile-flycheck-hydra/body)
+    ("a" +projectile-code-action))
 
 
 (provide '+projectile)

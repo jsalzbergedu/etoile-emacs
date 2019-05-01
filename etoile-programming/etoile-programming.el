@@ -336,17 +336,8 @@ _j_: company-select-next-or-abort
 
 (use-package counsel-projectile
   :straight t
-  :demand t)
-
-;; Project hyrdra for generating hydras for projects
-(use-package project-hydra
   :demand t
-  :straight (project-hydra :type git
-                           :host github
-                           :repo "jsalzbergedu/project-hydra")
-  :init
-  (eval-and-compile
-    (require 'project-hydra)))
+  :after projectile)
 
 ;; Magit, the excellent interface to git through emacs
 (use-package magit
@@ -378,16 +369,20 @@ _j_: company-select-next-or-abort
   :straight t
   :defer t
   :config
-  (setq flycheck-idle-change-delay 2)
-  (defhydra hydra-flycheck-error (:hint nil :color blue)
-    "
-_n_: flycheck-next-error
-_N_: flycheck-previous-error
-_e_: flycheck-list-errors
-"
-    ("n" flycheck-next-error :color pink)
-    ("N" flycheck-previous-error :color pink)
-    ("e" flycheck-list-errors :color blue)))
+  (setq flycheck-idle-change-delay 2))
+
+
+(use-package +projectile
+  :demand t
+  :after (projectile counsel-projectile flycheck hydra lsp-ui)
+  :straight (+projectile :type git
+                         :host github
+                         :repo "jsalzbergedu/etoile-emacs"
+                         :files ("etoile-programming/+projectile/*.el"))
+  :general
+  (:states '(normal motion)
+            "SPC p" '+projectile-hydra/body))
+
 
 ;; LSP integration with flycheck
 (use-package lsp-ui
@@ -449,8 +444,8 @@ _e_: flycheck-list-errors
 ;; Java
 ;; TODO clean these up into + packages
 
-;; (projectile-register-project-type 'eclipse '(".classpath" ".project")
-;;                                   :compile 'lsp-java-build-project)
+(projectile-register-project-type 'eclipse '(".classpath" ".project")
+                                  :compile 'lsp-java-build-project)
 
 (use-package output-buffer
   :straight (output-buffer :type git
@@ -528,21 +523,6 @@ _m_: dap-java-run-test-method"
   :commands treemacs--setup-icon)
 
 
-(project-hydra hydra-java
-  :test dap-java-testrun-hydra/body
-  :compile lsp-java-build-project
-  :stylecheck checkstyle
-  :search counsel-projectile-rg
-  :git magit-status
-  :run dap-java-debug
-  :and ("p" counsel-projectile-find-file)
-  :and ("e" hydra-flycheck-error/body)
-  :and ("a" lsp-ui-sideline-apply-code-actions)
-  :and ("d" xref-find-definitions-other-window)
-  :and ("f" xref-find-definitions)
-  :and ("o" toggle-dap))
-
-
 (use-package lsp-java
   :demand t
   :straight (lsp-java :type git
@@ -559,8 +539,13 @@ _m_: dap-java-run-test-method"
 				                 (setq indent-tabs-mode nil
 					               tab-width 4
                                                        c-basic-offset 4))))
-
-  (evil-define-key 'normal java-mode-map (kbd "SPC p") 'hydra-java/body))
+  (push `(eclipse . (:test-hydra
+                     dap-java-testrun-hydra/body
+                     :compile
+                     lsp-java-build-project
+                     :code-action
+                     lsp-ui-sideline-apply-code-actions))
+        +projectile-local-commands))
 
 (use-package lsp-java-treemacs
   :demand t
@@ -678,20 +663,7 @@ _m_: dap-java-run-test-method"
   (add-hook 'rust-mode-hook 'prog-minor-modes-common)
   (add-hook 'rust-mode-hook (lambda ()
                               (add-to-list 'flycheck-checkers 'lsp-ui)))
-  (add-hook 'rust-mode-hook 'lsp)
-
-  (project-hydra hydra-rust
-    :test cargo-process-test
-    :compile cargo-process-build
-    :stylecheck nil
-    :search counsel-projectile-rg
-    :git hydra-magit/body
-    :run cargo-process-run
-    :and ("p" counsel-projectile-find-file)
-    :and ("e" hydra-flycheck-error/body)
-    :and ("a" lsp-ui-sideline-apply-code-actions)
-    :and ("d" xref-find-definitions-other-window)
-    :and ("f" xref-find-definitions)))
+  (add-hook 'rust-mode-hook 'lsp))
 
 (use-package flycheck-rust
   :defer t
@@ -758,6 +730,11 @@ _m_: dap-java-run-test-method"
   (add-hook 'cmake-mode-hook 'prog-minor-modes-common))
 
 ;; TODO: Move all the c++ stuff into + packages
+(use-package clang-include-fixer
+  :load-path "/usr/share/clang/"
+  :straight nil
+  :defer t)
+
 (use-package clang-format
   :straight t
   :init
@@ -1038,32 +1015,6 @@ _m_: dap-java-run-test-method"
   :init
   (add-hook 'makefile-mode-hook 'prog-minor-modes-common))
 
-(project-hydra hydra-c
-  :test +cc-mode/test
-  :compile +cc-mode/compile
-  :stylecheck nil
-  :search counsel-projectile-rg
-  :git magit-status
-  :run +cc-mode/run
-  :and ("p" counsel-projectile-find-file)
-  :and ("e" hydra-flycheck-error/body)
-  :and ("a" lsp-ui-sideline-apply-code-actions)
-  :and ("d" xref-find-definitions-other-window)
-  :and ("f" xref-find-definitions))
-
-(project-hydra hydra-cpp
-  :test +cc-mode/test
-  :compile +cc-mode/compile
-  :stylecheck nil
-  :search counsel-projectile-rg
-  :git hydra-magit/body
-  :run nil
-  :and ("p" counsel-projectile-find-file)
-  :and ("e" hydra-flycheck-error/body)
-  :and ("a" lsp-ui-sideline-apply-code-actions)
-  :and ("d" xref-find-definitions-other-window)
-  :and ("f" xref-find-definitions))
-
 (use-package cc-mode
   :defer t
   :after flycheck
@@ -1080,7 +1031,6 @@ _m_: dap-java-run-test-method"
                              (prog-minor-modes-common)))
   (add-hook 'c++-mode-hook #'+ccls/enable-with-lens)
   (add-to-list 'auto-mode-alist '("conanfile\\.txt\\'" . conf-mode))
-  (evil-define-key 'normal c++-mode-map (kbd "SPC p") 'hydra-cpp/body)
   (add-hook 'c++-mode-hook #'evil-normalize-keymaps)
   ;; c stuff
   (add-hook 'c-mode-hook (lambda ()
@@ -1091,8 +1041,7 @@ _m_: dap-java-run-test-method"
                                  c-basic-offset 2)
                            (setq show-trailing-whitespace t)
                            (prog-minor-modes-common)))
-  (add-hook 'c-mode-hook #'+ccls/enable-with-lens)
-  (evil-define-key 'normal c-mode-map (kbd "SPC p") #'hydra-c/body))
+  (add-hook 'c-mode-hook #'+ccls/enable-with-lens))
 
 (projectile-register-project-type 'ccls '(".ccls-root")
                   :compile "make"
