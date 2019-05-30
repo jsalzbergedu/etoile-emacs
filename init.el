@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -13,6 +14,20 @@
 
 (push "lib" straight-default-files-directive)
 (straight-use-package 'use-package)
+
+;; replace some package.el functions
+(use-package package
+  :defer t
+  :straight nil
+  :config
+  (defun package-installed-p (package &optional min-version)
+    (when (not (or (stringp package) (symbolp package) (package-desc-p package)))
+      (signal 'bad-argument-types `(package ,(type-of package))))
+    (let* ((key (cond ((stringp package) package)
+                      ((symbolp package) (format "%s" package))
+                      ((package-desc-p package) (format "%s" (package-desc-name package)))))
+           (plist (gethash key straight--recipe-cache)))
+      (plist-get plist :local-repo))))
 
 (require 'bind-key)
 

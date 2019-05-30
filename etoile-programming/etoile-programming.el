@@ -154,6 +154,11 @@
   :after smartparens
   :demand t)
 
+(use-package smartparens-rust
+  :straight nil
+  :after smartparens
+  :demand t)
+
 ;; Rainbow delimiters, a visual hint of nest depth
 (use-package rainbow-delimiters
   :defer t
@@ -331,6 +336,12 @@ _j_: company-select-next-or-abort
   (put 'projectile-project-root 'safe-local-variable #'stringp)
   (put 'projectile-project-type 'safe-local-variable #'symbolp)
   :config
+  (projectile-register-project-type 'eclipse '(".classpath" ".project"))
+  (defun +projectile-elisp-project-p ()
+    "Check if a project contains a .el file"
+    (projectile-verify-file-wildcard "*.el"))
+  (projectile-register-project-type 'elisp #'+projectile-elisp-project-p)
+  (projectile-register-project-type 'compiledb '("compile_commands.json"))
   (projectile-global-mode 1)
   (setq projectile-completion-system 'ivy))
 
@@ -379,7 +390,7 @@ _j_: company-select-next-or-abort
                          :host github
                          :repo "jsalzbergedu/etoile-emacs"
                          :files ("etoile-programming/+projectile/*.el"))
-  :general
+  :general                              ;
   (:states '(normal motion)
             "SPC p" '+projectile-hydra/body))
 
@@ -444,8 +455,6 @@ _j_: company-select-next-or-abort
 ;; Java
 ;; TODO clean these up into + packages
 
-(projectile-register-project-type 'eclipse '(".classpath" ".project")
-                                  :compile 'lsp-java-build-project)
 
 (use-package output-buffer
   :straight (output-buffer :type git
@@ -600,7 +609,20 @@ _m_: dap-java-run-test-method"
   :demand t
   :config (exec-path-from-shell-initialize))
 
-(add-hook 'emacs-lisp-mode-hook 'prog-minor-modes-common)
+(use-package elisp-mode
+  :straight nil
+  :defer t
+  :hook ((emacs-lisp-mode . prog-minor-modes-common))
+  :config
+  (+projectile-local-commands-add-type 'elisp)
+  (push `(elisp . ()) +projectile-local-commands))
+
+(use-package emr
+  :straight t
+  :demand t
+  :after elisp-mode
+  :config
+  (+projectile-local-commands-add-command 'elisp :code-action #'emr-show-refactor-menu))
 
 (defun eval-region-advice (eval-region-orig start end &optional printflag read-function)
   (funcall eval-region-orig start end t read-function))
@@ -609,6 +631,7 @@ _m_: dap-java-run-test-method"
 (defun mark-region-with-face (face)
   (interactive "SFace: ")
   (put-text-property (region-beginning) (region-end) 'face face))
+
 ;; Common Lisp:
 (use-package slime-autoloads
   :demand t
@@ -630,6 +653,7 @@ _m_: dap-java-run-test-method"
     (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
       (load (expand-file-name "~/quicklisp/slime-helper.el"))))
   (setq inferior-lisp-program "/usr/bin/sbcl")
+  (put 'inferior-lisp-program 'safe-local-variable #'stringp)
   (evil-define-key 'visual slime-mode-map "SPC e" 'slime-eval-region)
   (add-prog-minor-modes-common 'lisp-mode-hook 'slime-repl-mode-hook)
   :init
@@ -653,17 +677,31 @@ _m_: dap-java-run-test-method"
   :commands geiser-mode)
 
 ;; Rust:
-(use-package rust-mode
-  :defer t
-  :straight (rust-mode :type git
-                       :host github
-                       :repo "rust-lang/rust-mode"
-                       :files ("rust-mode.el"))
+(use-package rustic
+  :demand t
+  :after rust-mode
+  :straight t
   :config
-  (add-hook 'rust-mode-hook 'prog-minor-modes-common)
-  (add-hook 'rust-mode-hook (lambda ()
-                              (add-to-list 'flycheck-checkers 'lsp-ui)))
-  (add-hook 'rust-mode-hook 'lsp))
+  (add-hook 'rustic-mode-hook 'prog-minor-modes-common)
+  (add-hook 'rustic-mode-hook (lambda ()
+                                (add-to-list 'flycheck-checkers 'lsp-ui)))
+  (add-hook 'rustic-mode-hook 'lsp)
+  (sp-with-modes '(rustic-mode)
+    (sp-local-pair "'" "'"
+                   :unless '(sp-in-comment-p sp-in-string-quotes-p sp-in-rust-lifetime-context)
+                   :post-handlers'(:rem sp-escape-quotes-after-insert))
+    (sp-local-pair "<" ">"
+                   :when '(sp-rust-filter-angle-brackets)
+                   :skip-match 'sp-rust-skip-match-angle-bracket))
+
+  ;; Rust has no sexp suffices.  This fixes slurping
+  ;; (|foo).bar -> (foo.bar)
+  (add-to-list 'sp-sexp-suffix (list #'rustic-mode 'regexp "")))
+
+(use-package lsp-rust
+  :demand t
+  :after rust-mode
+  :straight nil)
 
 (use-package flycheck-rust
   :defer t
@@ -736,7 +774,9 @@ _m_: dap-java-run-test-method"
   :defer t)
 
 (use-package clang-format
-  :straight t
+  :straight (clang-format :type git
+                          :host github
+                          :repo "https://github.com/sonatard/clang-format.git")
   :init
   (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
   (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
@@ -828,7 +868,7 @@ _m_: dap-java-run-test-method"
   ;;       '("#34495e" "#34495e" "#34495e" "#34495e" "#34495e"
   ;;         "#34495e" "#34495e" "#34495e" "#34495e" "#34495e"))
   (setq ccls-sem-highlight-method 'overlay)
-  (ccls-use-default-rainbow-sem-highlight)
+  (eval-and-compile (ccls-use-default-rainbow-sem-highlight))
   (defun ccls--is-ccls-buffer-advice (f &rest args)
     "Fix ccls--is-ccls-buffer."
     (apply f args)
@@ -1015,37 +1055,30 @@ _m_: dap-java-run-test-method"
   :init
   (add-hook 'makefile-mode-hook 'prog-minor-modes-common))
 
+(defun +c-and-c++-config ()
+  "Set up c and c++ buffers"
+  (google-set-c-style)
+  (google-make-newline-indent)
+  (setq indent-tabs-mode nil
+        tab-width 2
+        c-basic-offset 2)
+  (setq show-trailing-whitespace t)
+  (+ccls/enable-with-lens)
+  (prog-minor-modes-common)
+  (evil-normalize-keymaps))
+
 (use-package cc-mode
   :defer t
   :after flycheck
   :straight nil
   :init
-  ;; makefiles
-  ;; c++ stuff
-  (add-hook 'c++-mode-hook (lambda ()
-                             (google-set-c-style)
-                             (google-make-newline-indent)
-                             (setq indent-tabs-mode nil
- 				   tab-width 2
-                                   c-basic-offset 2)
-                             (prog-minor-modes-common)))
-  (add-hook 'c++-mode-hook #'+ccls/enable-with-lens)
   (add-to-list 'auto-mode-alist '("conanfile\\.txt\\'" . conf-mode))
-  (add-hook 'c++-mode-hook #'evil-normalize-keymaps)
-  ;; c stuff
-  (add-hook 'c-mode-hook (lambda ()
-                           (google-set-c-style)
-                           (google-make-newline-indent)
-                           (setq indent-tabs-mode nil
-                                 tab-width 2
-                                 c-basic-offset 2)
-                           (setq show-trailing-whitespace t)
-                           (prog-minor-modes-common)))
-  (add-hook 'c-mode-hook #'+ccls/enable-with-lens))
-
-(projectile-register-project-type 'ccls '(".ccls-root")
-                  :compile "make"
-                  :test "make test")
+  (add-hook 'c++-mode-hook #'+c-and-c++-config)
+  (add-hook 'c-mode-hook #'+c-and-c++-config)
+  :config
+  (+projectile-local-commands-add-type 'compiledb)
+  (+projectile-local-commands-add-command 'compiledb :compile #'+cc-mode/compile)
+  (+projectile-local-commands-add-command 'compiledb :code-action #'lsp-ui-sideline-apply-code-actions))
 
 ;; Json
 (use-package json-mode
@@ -1167,31 +1200,21 @@ _m_: dap-java-run-test-method"
   :init
   (add-hook 'csv-mode-hook 'prog-minor-modes-common))
 
-;; TODO: Build EmmyLua automatically
-;; Lua mode
-(defun emmylua--progress-report-handler (workspace params)
-  "Handle the method emmy/progressReport.
-Currently does nothing.")
-
-(lsp-register-client
- (make-lsp-client :new-connection
-                  (lsp-stdio-connection
-                   (list
-                    "/usr/bin/java"
-                    "-cp"
-                    (expand-file-name "EmmyLua-LS-all.jar" user-emacs-directory)
-                    "com.tang.vscode.MainKt"))
-                  :notification-handlers (lsp-ht ("emmy/progressReport" #'emmylua--progress-report-handler))
-                  :major-modes '(lua-mode)
-                  :server-id 'emmy-lua))
+(use-package lsp-lua-emmy
+  :demand t
+  :straight (lsp-lua-emmy :type git
+                          :host github
+                          :repo "phenix3443/lsp-lua-emmy")
+  :config
+  (setq lsp-lua-emmy-jar-path (expand-file-name "EmmyLua-LS-all.jar" user-emacs-directory)))
 
 (use-package lua-mode
-  :defer t
-  :straight t
-  :hook ((lua-mode . prog-minor-modes-common)
-         (lua-mode . lsp))
-  :config
-  (add-to-list 'company-backend 'company-lua))
+ :defer t
+ :straight t
+ :hook ((lua-mode . prog-minor-modes-common)
+        (lua-mode . lsp))
+ :config
+ (add-to-list 'company-backend 'company-lua))
 
 
 

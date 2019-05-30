@@ -29,10 +29,17 @@
 (require 'counsel-projectile)
 (require 'subr-x)
 (require 'hydra)
-(require 'lsp-ui)
 
 (defvar +projectile-local-commands '()
   "An alist of plists mapping project types to commands used on a project.")
+
+(defun +projectile-local-commands-add-type (type)
+  "Add a project TYPE to +projectile-local-commands."
+  (push (list type) +projectile-local-commands))
+
+(defun +projectile-local-commands-add-command (type command-type command)
+  (setcdr (assoc type +projectile-local-commands)
+          `(,command-type ,command ,@(alist-get type +projectile-local-commands))))
 
 (defun +projectile-get-local-command (command)
   "Using a project of type TYPE, get the COMMAND."
@@ -65,7 +72,7 @@ _e_: flycheck-list-errors
 
 (defhydra +projectile-hydra (:hint nil :color blue)
     "
-^Project Operations^          ^Local Operations^            ^Navigation^
+^Project Operations^          ^Refactoring^                 ^Navigation^
 ^------------------^--------+-^----------------^----------+-^----------^---------------------------------
 _t_: +projectile-test-hydra | _a_ +projectile-code-action | _g_ counsel-projectile-rg
 _c_: +projectile-compile    | ^ ^                         | _p_ counsel-projectile-find-file

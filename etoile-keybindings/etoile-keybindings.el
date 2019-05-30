@@ -57,7 +57,7 @@
             "SPC q" 'kill-this-buffer
             "SPC a" 'switch-to-buffer
             "SPC SPC" '+emacs/search
-            "/" 'swiper))
+            "C-s" 'swiper))
 
 (use-package evil-surround
   :straight t
@@ -145,7 +145,9 @@
   :straight nil
   ;; For some reason info must be brute forced here
   :config
-  (substitute-key-definition 'Info-scroll-up nil Info-mode-map))
+  (substitute-key-definition 'Info-scroll-up nil Info-mode-map)
+  (substitute-key-definition 'Info-help 'evil-backward-char Info-mode-map)
+  (substitute-key-definition 'Info-history-back 'evil-forward-char Info-mode-map))
   ;; (evil-define-key 'normal 'Info-mode-map (kbd "p") 'Info-prev))
 
 ;; Ivy, Swiper, Counil, Flx, and Amx

@@ -113,7 +113,27 @@ Inserted by installing org-mode or when a release is made."
 
   ;;(ein:org-register-lang-mode "ein-c++" 'c++)
   ;; (require 'org-mks) ;; for some reason capture doesnt work without this
-  :commands (org-mode org-capture))
+  :commands (org-mode))
+
+(use-package org-macs
+  :demand t
+  :straight nil
+  :after org)
+
+(use-package org-capture
+  :demand t
+  :straight nil
+  :after (org org-macs)
+  :commands org-capture
+  :general
+  (:states '(normal motion)
+           "SPC c" 'org-capture)
+  :hook ((org-capture-mode . (lambda ()
+                               (add-hook 'after-save-hook 'org-capture-finalize nil t)))))
+
+(use-package org-agenda
+  :demand t
+  :after org)
 
 (use-package ob-plantuml
   :init
@@ -122,17 +142,10 @@ Inserted by installing org-mode or when a release is made."
   :demand t
   :after org)
 
-(use-package org-evil
-  :straight (org-evil :type git
-                      :host github
-                      :repo "GuiltyDolphin/org-evil")
+(use-package evil-org
+  :straight t
   :demand t
   :after org)
-
-(use-package org-evil-motion
-  :demand t
-  :after org-evil
-  :straight nil)
 
 (use-package tramp
   :straight nil
@@ -182,6 +195,13 @@ Inserted by installing org-mode or when a release is made."
         erc-ring-mode t
         erc-stamp-mode t
         erc-track-minor-mode t))
+
+(use-package org-pdfview
+  :demand t
+  :after org
+  :straight (org-pdfview :type git
+                         :host github
+                         :repo "markus1189/org-pdfview"))
 
 (use-package ansi-term
   :straight nil
@@ -257,21 +277,6 @@ Inserted by installing org-mode or when a release is made."
 
 ;; Vterm (a real terminal implemented via compile time modules)
 
-(defun +vterm-suggest ()
-  "Suggest to use vterm over (ansi) term"
-  (interactive)
-  (message "Did you mean to use vterm?"))
-
-(use-package vterm
-  :defer t
-  :init (vterm-module-compile)
-  :straight (vterm :type git
-                   :host github
-                   :repo "akermu/emacs-libvterm"
-                   :files ("*"))
-  :hook ((term-mode . +vterm-suggest)))
-
-
 (use-package mu4e
   :straight nil
   :load-path "/usr/share/emacs/site-lisp/mu4e/"
@@ -297,6 +302,13 @@ Inserted by installing org-mode or when a release is made."
 (use-package webpaste
   :straight t
   :defer t)
+
+(use-package ros
+  :straight (ros :type git
+                 :host github
+                 :repo "jsalzbergedu/ros")
+  :demand t
+  :after org)
 
 ;; Direnv
 ;; (use-package direnv
