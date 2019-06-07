@@ -271,7 +271,7 @@ Inserted by installing org-mode or when a release is made."
   (push '("'e" . "è") letter-combinator-combinations)
   (push '("'E" . "È") letter-combinator-combinations)
   (push '("e'" . "é") letter-combinator-combinations)
-  (push '("e'" . "É") letter-combinator-combinations)
+  (push '("E'" . "É") letter-combinator-combinations)
   (push '("'a" . "à") letter-combinator-combinations)
   (push '("'u" . "ù") letter-combinator-combinations))
 

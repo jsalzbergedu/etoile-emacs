@@ -352,8 +352,8 @@ _j_: company-select-next-or-abort
 
 ;; Magit, the excellent interface to git through emacs
 (use-package magit
-  :defer t
   :straight t
+  :demand t
   :general
   (:keymaps '(magit-mode-map magit-diff-mode-map)
             "SPC" nil))
@@ -776,7 +776,7 @@ _m_: dap-java-run-test-method"
 (use-package clang-format
   :straight (clang-format :type git
                           :host github
-                          :repo "https://github.com/sonatard/clang-format.git")
+                          :repo "sonatard/clang-format")
   :init
   (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
   (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))

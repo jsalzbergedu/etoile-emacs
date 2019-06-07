@@ -38,12 +38,12 @@
   (eval-and-compile
     (require 'general)))
 
+(setq evil-want-keybinding nil)
+
 (use-package evil
   :demand t
   :straight t
   :after (evil-collection)
-  :init
-  (eval-and-compile (setq evil-want-keybinding nil))
   :config
   (evil-mode 1)
   (global-undo-tree-mode)
@@ -79,10 +79,13 @@
    ((windmove-right) t)
    (t nil)))
 
+(defun check-stumpish ()
+  (= (call-process "which" nil nil nil "stumpish") 0))
+
 (defun stump-move (dir)
   "Move stumpwm focus in direction DIR"
   (interactive "sDIR: ")
-  (when (f-file-p "~/.local/bin/stumpish")
+  (when (check-stumpish)
     (make-process :name "windmove" :buffer nil :command
                   (list "stumpish"
                         (concat "move-focus " dir)))))
