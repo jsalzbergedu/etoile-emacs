@@ -61,11 +61,16 @@
 
 (use-package evil-surround
   :straight t
+  :demand t
+  :after evil
   :config
   (push '(?\( . ("(" . ")")) evil-surround-pairs-alist)
   (push '(?\[ . ("[" . "]")) evil-surround-pairs-alist)
   (push '(?\{ . ("{" . "}")) evil-surround-pairs-alist)
-  (global-evil-surround-mode 1))
+  (global-evil-surround-mode 1)
+  :general
+  (:keymaps '(evil-surround-mode-map) :states '(visual)
+            "S" 'evil-surround-region))
 
 ;; TODO move this to a + package
 ;; Either move across emacs windows or stumpwm windows
@@ -126,6 +131,7 @@
   :config
   (setq evil-collection-mode-list (remove 'company evil-collection-mode-list))
   (push "SPC" evil-collection-key-blacklist)
+  (push "S" evil-collection-key-blacklist)
   (evil-collection-init))
 
 ;; Unset space in many packages
