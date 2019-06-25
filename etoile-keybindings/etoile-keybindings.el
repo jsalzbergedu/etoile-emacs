@@ -130,8 +130,8 @@
   :init
   :config
   (setq evil-collection-mode-list (remove 'company evil-collection-mode-list))
+  (setq evil-collection-mode-list (remove 'slime evil-collection-mode-list))
   (push "SPC" evil-collection-key-blacklist)
-  (push "S" evil-collection-key-blacklist)
   (evil-collection-init))
 
 ;; Unset space in many packages

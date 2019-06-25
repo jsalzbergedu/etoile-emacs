@@ -654,7 +654,6 @@ _m_: dap-java-run-test-method"
       (load (expand-file-name "~/quicklisp/slime-helper.el"))))
   (setq inferior-lisp-program "/usr/bin/sbcl")
   (put 'inferior-lisp-program 'safe-local-variable #'stringp)
-  (evil-define-key 'visual slime-mode-map "SPC e" 'slime-eval-region)
   (add-prog-minor-modes-common 'lisp-mode-hook 'slime-repl-mode-hook)
   :init
   (add-hook 'lisp-mode-hook 'prog-minor-modes-common))
@@ -1216,6 +1215,13 @@ _m_: dap-java-run-test-method"
  :config
  (add-to-list 'company-backend 'company-lua))
 
+(use-package lua-lambda
+  :demand t
+  :after lua-mode
+  :straight (lua-lambda :type git
+                        :host github
+                        :repo "jsalzbergedu/lua-lambda-emacs")
+  :hook ((lua-mode . lua-lambda-mode)))
 
 
 ;; Rosie Pattern language

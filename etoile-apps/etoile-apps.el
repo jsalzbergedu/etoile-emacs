@@ -311,11 +311,14 @@ Inserted by installing org-mode or when a release is made."
   :after org)
 
 ;; Direnv
-;; (use-package direnv
-;;   :straight t
-;;   :demand t
-;;   :config
-;;   (direnv-mode))
+(use-package direnv
+  :straight t
+  :demand t
+  :config
+  (direnv-mode)
+  (setq direnv-always-show-summary nil)
+  ;; (push X direnv-non-file-modes)
+  :if (= (call-process "which" nil nil nil "direnv") 0))
 
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here
