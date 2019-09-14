@@ -95,6 +95,7 @@ Inserted by installing org-mode or when a release is made."
   (straight-use-package 'org-plus-contrib)
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
   (setq org-default-notes-file "~/.emacs.d/notes.org")
+  (push "~/.emacs.d/agenda.org" org-agenda-files)
   :config
   (setq org-indent-indentation-per-level 1
 	org-ellipsis ":"
@@ -109,7 +110,10 @@ Inserted by installing org-mode or when a release is made."
                                                            (coq . t)
                                                            (haskell . t)
                                                            (racket . t)
-                                                           (pie . t)))
+                                                           (pie . t)
+                                                           (dot . t)
+                                                           (jupyter . t)
+                                                           (makefile . t)))
 
   ;;(ein:org-register-lang-mode "ein-c++" 'c++)
   ;; (require 'org-mks) ;; for some reason capture doesnt work without this
@@ -137,7 +141,7 @@ Inserted by installing org-mode or when a release is made."
 
 (use-package ob-plantuml
   :init
-  (setq org-plantuml-jar-path "/opt/plantuml/plantuml.jar")
+  (setq org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar")
   :straight nil
   :demand t
   :after org)

@@ -26,6 +26,10 @@
 ;; Configuration for emacs variables
 
 ;;; Code:
+(use-package f
+  :straight t
+  :demand t)
+
 (defun +emacs/search (string)
   (interactive "sSearch: ")
   (start-process "Search the internet"
@@ -33,6 +37,16 @@
                  "firefox"
                  "--search"
                  string))
+
+
+(defun write-temp-and-kill ()
+  "Write the region to a temp file, then add the temp file the kill ring."
+  (interactive)
+  (let ((text (buffer-substring-no-properties (region-beginning) (region-end)))
+        (file (make-temp-file "write-temp-and-kill"))
+        (coding 'utf-8))
+    (f-write text 'utf-8 file)
+    (kill-new file)))
 
 ;; "Opt out" of custom-set-variables.
 ;; These variables will still be viewable after they are set,

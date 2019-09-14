@@ -39,6 +39,9 @@
 (set-face-attribute 'fixed-pitch nil
                     :font "Inconsolata LGC")
 
+(set-face-attribute 'fixed-pitch-serif nil
+                    :font "League Mono")
+
 (set-face-attribute 'default nil
                     :height 100
                     :family "Inconsolata LGC")
@@ -180,11 +183,14 @@ FACE defaults to inheriting from default and highlight."
                  (or face '(:inherit default :inherit highlight)))
     ol))
 
+(cl-defstruct etoile-themes-overlay-remover
+  fn)
+
 (let ((ov nil)) ; keep track of the overlay
   (advice-add
    #'show-paren-function
    :after
-    (defun show-paren--off-screen+ (&rest _args)
+    (lambda (&rest _args)
       "Display matching line for off-screen paren."
       (when (overlayp ov)
         (delete-overlay ov))
@@ -210,7 +216,13 @@ FACE defaults to inheriting from default and highlight."
                      (let ((msg (apply #'format-message msg args)))
                        (setq ov (display-line-overlay+
                                  (window-start) msg ))))))
-          (blink-matching-open))))))
+          (blink-matching-open)
+          (let ((remover (make-etoile-themes-overlay-remover)))
+            (setf (etoile-themes-overlay-remover-fn remover)
+                  (lambda ()
+                    (when (overlayp ov) (delete-overlay ov))
+                    (remove-hook 'post-command-hook (etoile-themes-overlay-remover-fn remover) :local)))
+            (add-hook 'post-command-hook (etoile-themes-overlay-remover-fn remover) nil :local)))))))
 
 (setq show-paren-style 'paren
       show-paren-delay 0.03

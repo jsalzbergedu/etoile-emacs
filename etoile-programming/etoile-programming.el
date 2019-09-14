@@ -726,6 +726,11 @@ _m_: dap-java-run-test-method"
   :config (progn (add-hook 'toml-mode-hook 'prog-minor-modes-common)))
 
 ;; TeX:
+(use-package auctex
+  :defer t
+  :straight t
+  :hook ((tex-mode . prog-minor-modes-common)
+         (LaTeX-mode . prog-minor-modes-common)))
 
 ;; HTML:
 (use-package sgml-mode
@@ -773,13 +778,14 @@ _m_: dap-java-run-test-method"
   :defer t)
 
 (use-package clang-format
+  :demand t
+  :after ccls
   :straight (clang-format :type git
                           :host github
                           :repo "sonatard/clang-format")
   :init
   (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
-  (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
-  :defer t)
+  (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t))))
 
 (use-package cdecl
   :straight t
@@ -863,20 +869,11 @@ _m_: dap-java-run-test-method"
   (setq ccls-sem-highlight-method 'overlay)
   :straight t
   :config
-  ;; (setq ccls-sem-function-colors
-  ;;       '("#34495e" "#34495e" "#34495e" "#34495e" "#34495e"
-  ;;         "#34495e" "#34495e" "#34495e" "#34495e" "#34495e"))
   (setq ccls-sem-highlight-method 'overlay)
   (eval-and-compile (ccls-use-default-rainbow-sem-highlight))
-  (defun ccls--is-ccls-buffer-advice (f &rest args)
-    "Fix ccls--is-ccls-buffer."
-    (apply f args)
-    (locate-dominating-file default-directory ".ccls-root"))
-
   (set-face-attribute 'ccls-code-lens-face nil
                       :inherit 'shadow
                       :height 0.8)
-  (advice-add 'ccls--is-ccls-buffer :around 'ccls--is-ccls-buffer-advice)
   :commands (lsp-ccls-enable ccls-code-lens-mode))
 ;;   :commands lsp-cquery-enable)
 
@@ -1261,9 +1258,33 @@ _m_: dap-java-run-test-method"
   :straight t
   :defer t
   :hook ((tuareg-mode . prog-minor-modes-common)
-         (tuareg-mode . lsp)
          (tuareg-interactive-mode . prog-minor-modes-common)
          (tuareg-opam-mode . prog-minor-modes-common)))
+
+(use-package merlin
+  :demand t
+  :after lsp
+  :hook ((tuareg-mode . merlin-mode)
+         (merlin-mode . lsp))
+  :config
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection
+                     '("opam" "exec" "--" "ocamlmerlin-lsp"))
+    :major-modes '(caml-mode tuareg-mode)
+    :server-id 'ocamlmerlin-lsp)))
+
+(use-package utop
+  :straight t
+  :demand t
+  :after tuareg
+  :config
+  (setq utop-command "opam config exec -- utop -emacs")
+  (setq utop-edit-command nil))
+
+(use-package ocp-indent
+  :straight t
+  :demand t)
 
 ;; Nix expression language
 (use-package nix-mode
