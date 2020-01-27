@@ -37,5 +37,3 @@
                     :repo "jsalzbergedu/etoile-emacs"
                     :files ("etoile-emacs/*.el"))
   :demand t)
-
-(put 'narrow-to-region 'disabled nil)

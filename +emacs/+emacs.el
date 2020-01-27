@@ -59,5 +59,7 @@
 ;; Increase recentf size
 (setq recentf-max-saved-items 100)
 
+(put 'narrow-to-region 'disabled nil)
+
 (provide '+emacs)
 ;;; +emacs.el ends here

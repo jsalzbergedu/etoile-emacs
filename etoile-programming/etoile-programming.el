@@ -237,6 +237,7 @@ _j_: company-select-next-or-abort
                       :repo "emacs-lsp/lsp-mode")
   :init
   (setq lsp-prefer-flymake nil)
+  (setq lsp-enable-semantic-highlighting t)
   :config
   (setq lsp-inhibit-message t
         lsp-print-io nil))
@@ -404,7 +405,8 @@ _j_: company-select-next-or-abort
   :config
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
   (set-face-attribute 'lsp-ui-sideline-code-action nil
-                      :foreground "#2ecc71")
+                      :foreground "#4d4d4c"
+                      :background "#ffffff")
 
   (set-face-attribute 'lsp-ui-sideline-current-symbol nil
                       :foreground "white"
@@ -785,81 +787,87 @@ _m_: dap-java-run-test-method"
                           :repo "sonatard/clang-format")
   :init
   (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
-  (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t))))
+  (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
+  (defun +clang-format-when-clang-format ()
+    (interactive)
+    "When there is a .clang-format, run clang-format"
+    (when (file-exists-p (expand-file-name ".clang-format"))
+      (clang-format-buffer)))
+  (add-hook 'java-mode-hook (lambda () (add-hook 'before-save-hook '+clang-format-when-clang-format nil t))))
 
 (use-package cdecl
   :straight t
   :defer t
   :commands (cdecl-explain cdecl-explain-region))
 
-(use-package flycheck-vera
-  :demand t
-  :after flycheck
-  :straight (flycheck-vera :type git
-                           :host github
-                           :repo "jsalzbergedu/flycheck-vera")
-  :config
-  (flycheck-add-next-checker 'lsp-ui 'c/c++-vera++)
-  ;; List of rules can be found on
-  ;; https://bitbucket.org/verateam/vera/wiki/Rules
-  ;; No trailing whitespace
-  (push "L001" flycheck-vera-rules)
-  ;; No tab characters
-  (push "L002" flycheck-vera-rules)
-  ;; No leading and no trailing empty lines
-  (push "L003" flycheck-vera-rules)
-  ;; Line cannot be too long
-  (push "L004" flycheck-vera-rules)
-  ;; There should not be too many consecutive empty lines
-  (push "L005" flycheck-vera-rules)
-  ;; Source file should not be too long
-  (push "L006" flycheck-vera-rules)
-  ;; One line comments should not have forced continuation
-  (push "T001" flycheck-vera-rules)
-  ;; Reserved names should not be used for preprocessor macros
-  (push "T002" flycheck-vera-rules)
-  ;; Some keywords should be followed by a single space
-  (push "T003" flycheck-vera-rules)
-  ;; Some keywords should be immediatley followed by a colon
-  (push "T004" flycheck-vera-rules)
-  ;; Keywords break and continue should immediatley be followed by a semicolon
-  (push "T005" flycheck-vera-rules)
-  ;; Keywords return and throw should be immediatley followed by a semicolon
-  ;; or a single space
-  (push "T006" flycheck-vera-rules)
-  ;; Semicolons should not be isolated by spaces or comments from the
-  ;; rest of the code
-  (push "T007" flycheck-vera-rules)
-  ;; Keywords catch, for, if, and switch should be followed by a single space
-  (push "T008" flycheck-vera-rules)
-  ;; Commma should not be preceded by whitespace, but should be followed by one
-  (push "T009" flycheck-vera-rules)
-  ;; Identifiers should not be composed of 'l' and 'O' characters only
-  (push "T010" flycheck-vera-rules)
-  ;; Curly brakets from the same pair should be either in the same line or in
-  ;; the same column
-  ;; (push "T011" flycheck-vera-rules)
-  ;; Negation operator should not be used in its short form
-  ;; (push "T012" flycheck-vera-rules)
-  ;; Source files should contain the copyright notice
-  ;; (push "T013" flycheck-vera-rules)
-  ;; Source files should refer the Boost Software License
-  ;; (push "T014" flycheck-vera-rules)
-  ;; HTML links in commments and string literals should be correct
-  (push "T015" flycheck-vera-rules)
-  ;; Calls to min/max should be protected against accidental macro substitution
-  ;; (push "T016" flycheck-vera-rules)
-  ;; Unnamed namespaces are not allowed in header files
-  (push "T017" flycheck-vera-rules)
-  ;; "using namespace" is not allowed in header files
-  (push "T018" flycheck-vera-rules)
-  ;; Control structures must have complete curly-braced block of code
-  (push "T019" flycheck-vera-rules)
-  ;; My own rule:
-  ;; Brackets must be in kernel c style
-  ;; (rendered useless by clang-format)
-  ;; (push "LINUXKERNELBRACKETS.py" flycheck-vera-rules))
-  )
+;; (use-package flycheck-vera
+;;   :demand t
+;;   :after flycheck
+;;   :straight (flycheck-vera :type git
+;;                            :host github
+;;                            :repo "jsalzbergedu/flycheck-vera")
+;;   :config
+;;   (flycheck-add-next-checker 'lsp-ui 'c/c++-vera++)
+;;   ;; List of rules can be found on
+;;   ;; https://bitbucket.org/verateam/vera/wiki/Rules
+;;   ;; No trailing whitespace
+;;   (push "L001" flycheck-vera-rules)
+;;   ;; No tab characters
+;;   (push "L002" flycheck-vera-rules)
+;;   ;; No leading and no trailing empty lines
+;;   (push "L003" flycheck-vera-rules)
+;;   ;; Line cannot be too long
+;;   (push "L004" flycheck-vera-rules)
+;;   ;; There should not be too many consecutive empty lines
+;;   (push "L005" flycheck-vera-rules)
+;;   ;; Source file should not be too long
+;;   (push "L006" flycheck-vera-rules)
+;;   ;; One line comments should not have forced continuation
+;;   (push "T001" flycheck-vera-rules)
+;;   ;; Reserved names should not be used for preprocessor macros
+;;   (push "T002" flycheck-vera-rules)
+;;   ;; Some keywords should be followed by a single space
+;;   (push "T003" flycheck-vera-rules)
+;;   ;; Some keywords should be immediatley followed by a colon
+;;   (push "T004" flycheck-vera-rules)
+;;   ;; Keywords break and continue should immediatley be followed by a semicolon
+;;   (push "T005" flycheck-vera-rules)
+;;   ;; Keywords return and throw should be immediatley followed by a semicolon
+;;   ;; or a single space
+;;   (push "T006" flycheck-vera-rules)
+;;   ;; Semicolons should not be isolated by spaces or comments from the
+;;   ;; rest of the code
+;;   (push "T007" flycheck-vera-rules)
+;;   ;; Keywords catch, for, if, and switch should be followed by a single space
+;;   (push "T008" flycheck-vera-rules)
+;;   ;; Commma should not be preceded by whitespace, but should be followed by one
+;;   (push "T009" flycheck-vera-rules)
+;;   ;; Identifiers should not be composed of 'l' and 'O' characters only
+;;   (push "T010" flycheck-vera-rules)
+;;   ;; Curly brakets from the same pair should be either in the same line or in
+;;   ;; the same column
+;;   ;; (push "T011" flycheck-vera-rules)
+;;   ;; Negation operator should not be used in its short form
+;;   ;; (push "T012" flycheck-vera-rules)
+;;   ;; Source files should contain the copyright notice
+;;   ;; (push "T013" flycheck-vera-rules)
+;;   ;; Source files should refer the Boost Software License
+;;   ;; (push "T014" flycheck-vera-rules)
+;;   ;; HTML links in commments and string literals should be correct
+;;   (push "T015" flycheck-vera-rules)
+;;   ;; Calls to min/max should be protected against accidental macro substitution
+;;   ;; (push "T016" flycheck-vera-rules)
+;;   ;; Unnamed namespaces are not allowed in header files
+;;   (push "T017" flycheck-vera-rules)
+;;   ;; "using namespace" is not allowed in header files
+;;   (push "T018" flycheck-vera-rules)
+;;   ;; Control structures must have complete curly-braced block of code
+;;   (push "T019" flycheck-vera-rules)
+;;   ;; My own rule:
+;;   ;; Brackets must be in kernel c style
+;;   ;; (rendered useless by clang-format)
+;;   ;; (push "LINUXKERNELBRACKETS.py" flycheck-vera-rules))
+;;   )
 
 (use-package ccls
   :defer t
@@ -1263,16 +1271,17 @@ _m_: dap-java-run-test-method"
 
 (use-package merlin
   :demand t
+  :straight (merlin :type git
+                    :host github
+                    :repo "ocaml/merlin"
+                    :files ("emacs/*.el"))
   :after lsp
-  :hook ((tuareg-mode . merlin-mode)
-         (merlin-mode . lsp))
+  :hook ((tuareg-mode . merlin-mode))
   :config
   (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-stdio-connection
-                     '("opam" "exec" "--" "ocamlmerlin-lsp"))
-    :major-modes '(caml-mode tuareg-mode)
-    :server-id 'ocamlmerlin-lsp)))
+   (make-lsp-client :new-connection (lsp-stdio-connection '("ocamlmerlin-server"))
+                    :major-modes '(tuareg-mode)
+                    :server-id 'merlin)))
 
 (use-package utop
   :straight t
@@ -1306,10 +1315,42 @@ _m_: dap-java-run-test-method"
          (pseudocode-mode . prog-minor-modes-common)))
 
 ;; NASM
+(defun +nasm-mode-use-nasm-p ()
+  "Try to detect jwasm, nasm, or masm in the Makefile.
+If it can be found, the asm files in the directory probably
+use NASM syntax,"
+  (when-let ((makefile-file (or (when-let ((dir (locate-dominating-file default-directory "Makefile")))
+                                  (expand-file-name "Makefile" dir))
+                                (when-let ((dir (locate-dominating-file default-directory "makefile")))
+                                  (expand-file-name "makefile" dir)))))
+    (with-temp-buffer (insert-file-contents makefile-file)
+                      (not (not (or (progn (goto-char 0) (search-forward "jwasm" nil t))
+                                    (progn (goto-char 0) (search-forward "nasm" nil t))
+                                    (progn (goto-char 0) (search-forward "masm" nil t))))))))
+
+(defun +nasm-mode-choose-mode (&rest args)
+  "Based on the compiler found in the makefile, choose the assembler mode"
+  (if (+nasm-mode-use-nasm-p) (apply 'nasm-mode args) (apply 'asm-mode args)))
+
 (use-package nasm-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.asm\\'" . +nasm-mode-choose-mode))
   :defer t
   :straight t
   :hook ((nasm-mode . prog-minor-modes-common)))
+
+(use-package arm-mode
+  :straight (arm-mode :type git
+                      :host github
+                      :repo "charJe/arm-mode")
+  :defer t
+  :commands arm-mode
+  :hook ((arm-mode . prog-minor-modes-common)))
+
+(use-package gherkin-mode
+  :straight t
+  :defer t
+  :hook ((gherkin-mode . prog-minor-modes-common)))
 
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here

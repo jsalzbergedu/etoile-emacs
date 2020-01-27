@@ -61,5 +61,11 @@
                          :files ("etoile-apps/*.el"))
   :demand t)
 
+(use-package opam-user-setup
+  :straight nil
+  :load-path "~/.emacs.d"
+  :if (f-exists-p "~/.emacs.d/opam-user-setup.el")
+  :demand t)
+
 (provide 'etoile)
 ;;; etoile.el ends here
