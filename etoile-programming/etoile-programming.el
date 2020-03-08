@@ -549,7 +549,8 @@ _m_: dap-java-run-test-method"
 				                 (google-make-newline-indent)
 				                 (setq indent-tabs-mode nil
 					               tab-width 4
-                                                       c-basic-offset 4))))
+                                                       c-basic-offset 4)))
+         (add-hook 'java-mode-hook 'lsp-format-buffer))
   (push `(eclipse . (:test-hydra
                      dap-java-testrun-hydra/body
                      :compile
@@ -1351,6 +1352,16 @@ use NASM syntax,"
   :straight t
   :defer t
   :hook ((gherkin-mode . prog-minor-modes-common)))
+
+(use-package flycheck-checkstyle
+  :straight (flycheck-checkstyle :type git
+                                 :host github
+                                 :repo "leeaustinadams/flycheck-checkstyle")
+  :defer t
+  :after lsp-java
+  :config
+  (setq flycheck-checkstyle-jar "/home/jacob/cs-checkstyle/checkstyle-6.1.1-all.jar")
+  (setq flycheck-checkstylerc "/home/jacob/development/checkstyle/csc_checkstyle.xml"))
 
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here
