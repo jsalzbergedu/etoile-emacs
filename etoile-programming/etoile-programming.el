@@ -549,7 +549,8 @@ _m_: dap-java-run-test-method"
 				                 (google-make-newline-indent)
 				                 (setq indent-tabs-mode nil
 					               tab-width 4
-                                                       c-basic-offset 4))))
+                                                       c-basic-offset 4)
+                                                 (add-hook 'after-save-hook 'lsp-format-buffer nil t))))
   (push `(eclipse . (:test-hydra
                      dap-java-testrun-hydra/body
                      :compile
