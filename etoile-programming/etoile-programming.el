@@ -559,10 +559,6 @@ _m_: dap-java-run-test-method"
                      lsp-ui-sideline-apply-code-actions))
         +projectile-local-commands))
 
-(use-package lsp-java-treemacs
-  :demand t
-  :straight nil)
-
 ;; Groovy
 (use-package groovy-mode
   :straight (groovy-mode :type git
