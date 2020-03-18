@@ -324,5 +324,11 @@ Inserted by installing org-mode or when a release is made."
   ;; (push X direnv-non-file-modes)
   :if (= (call-process "which" nil nil nil "direnv") 0))
 
+;; Shell-pop
+(use-package shell-pop
+  :straight t
+  :defer t
+  :init (setq shell-pop-window-position "full"))
+
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here

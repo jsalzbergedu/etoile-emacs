@@ -56,7 +56,7 @@
             "SPC j" 'windmove-cf-down
             "SPC q" 'kill-this-buffer
             "SPC a" 'switch-to-buffer
-            "SPC SPC" '+emacs/search
+            "SPC SPC" 'shell-pop
             "C-s" 'swiper))
 
 (use-package evil-surround
