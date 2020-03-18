@@ -124,9 +124,7 @@
 
 (use-package evil-collection
   :demand t
-  :straight (evil-collection :type git
-                             :host github
-                             :repo "emacs-evil/evil-collection")
+  :straight t
   :init
   :config
   (setq evil-collection-mode-list (remove 'company evil-collection-mode-list))
