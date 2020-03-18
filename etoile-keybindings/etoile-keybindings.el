@@ -197,7 +197,7 @@
   :general
   (:keymaps '(normal motion)
             "SPC f" 'counsel-find-file)
-  ("<menu>" ignore)
+  ("<menu>" 'ignore)
   ("M-x" 'counsel-M-x)
   ("C-x C-f" 'counsel-find-file))
 
