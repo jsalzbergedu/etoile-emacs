@@ -1353,11 +1353,13 @@ use NASM syntax,"
   :straight (flycheck-checkstyle :type git
                                  :host github
                                  :repo "leeaustinadams/flycheck-checkstyle")
-  :defer t
+  :demand t
   :after lsp-java
   :config
   (setq flycheck-checkstyle-jar "/home/jacob/cs-checkstyle/checkstyle-6.1.1-all.jar")
-  (setq flycheck-checkstylerc "/home/jacob/development/checkstyle/csc_checkstyle.xml"))
+  (setq flycheck-checkstylerc "/home/jacob/development/checkstyle/csc_checkstyle.xml")
+  (flycheck-add-next-checker 'lsp 'checkstyle)
+  (push 'checkstyle flycheck-checkers))
 
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here
