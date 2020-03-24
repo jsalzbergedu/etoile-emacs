@@ -1152,7 +1152,7 @@ _m_: dap-java-run-test-method"
                            :host github
                            :repo "skuro/plantuml-mode")
   :init
-  (setq plantuml-jar-path "/opt/plantuml/plantuml.jar"))
+  (setq plantuml-jar-path "/usr/share/plantuml/plantuml.jar"))
 
 ;; Coq
 (use-package proof-general
