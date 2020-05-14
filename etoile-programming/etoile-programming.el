@@ -47,12 +47,17 @@
 ;;;###autoload
 (add-hook 'prog-minor-modes-common 'nlinum-mode)
 
+
 ;; Whitespace detection
 (defun show-trailing-whitespace ()
   (interactive)
   (setq show-trailing-whitespace t))
 
 (push 'show-trailing-whitespace prog-minor-modes-common)
+
+(use-package editorconfig
+  :straight t
+  :config (editorconfig-mode 1))
 
 ;; Ansi coloring
 (use-package ansi-color
@@ -454,9 +459,22 @@ _j_: company-select-next-or-abort
   (add-hook 'python-mode-hook 'prog-minor-modes-common)
   (add-hook 'python-mode-hook 'lsp))
 
+;; Javascript
+(use-package javascript-mode
+  :defer t
+  :straight nil
+  :hook
+  ((js-mode . lsp)
+   (js-mode . prog-minor-modes-common)))
+
+(use-package indium
+  :demand t
+  :after (javascript-mode)
+  :straight t)
+
+
 ;; Java
 ;; TODO clean these up into + packages
-
 
 (use-package output-buffer
   :straight (output-buffer :type git
@@ -737,6 +755,13 @@ _m_: dap-java-run-test-method"
   :straight nil
   :config (progn (add-hook 'sgml-mode-hook 'prog-minor-modes-common)))
 
+(use-package prettier-js
+  :straight t
+  :demand t
+  :after sgml-mode
+  :hook ((sgml-mode . prettier-js-mode)
+         (json-mode . prettier-js-mode)))
+
 ;; Markdown
 (use-package markdown-mode
   :defer t
@@ -785,12 +810,14 @@ _m_: dap-java-run-test-method"
   :init
   (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
   (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
+  (setq clang-format-executable "/usr/bin/clang-format-9")
   (defun +clang-format-when-clang-format ()
     (interactive)
     "When there is a .clang-format, run clang-format"
     (when (file-exists-p (expand-file-name ".clang-format"))
       (clang-format-buffer)))
-  (add-hook 'java-mode-hook (lambda () (add-hook 'before-save-hook '+clang-format-when-clang-format nil t))))
+  (add-hook 'java-mode-hook (lambda () (add-hook 'before-save-hook '+clang-format-when-clang-format nil t)))
+  (add-hook 'js-mode-hook (lambda () (add-hook 'before-save-hook '+clang-format-when-clang-format nil t))))
 
 (use-package cdecl
   :straight t
@@ -870,7 +897,7 @@ _m_: dap-java-run-test-method"
   :defer t
   :after flycheck
   :init
-  (setq ccls-executable "/usr/bin/ccls")
+  (setq ccls-executable "/snap/bin/ccls")
   (setq ccls-sem-highlight-method 'overlay)
   :straight t
   :config
@@ -1087,7 +1114,9 @@ _m_: dap-java-run-test-method"
   :straight (json-mode :type git
                        :host github
                        :repo "joshwnj/json-mode")
-  :config (progn (add-hook 'json-mode-hook 'prog-minor-modes-common)))
+  :config (progn (add-hook 'json-mode-hook 'prog-minor-modes-common)
+                 (add-hook 'json-mode-hook (lambda ()
+                                             (setq before-save-hook (remove '+clang-format-when-clang-format before-save-hook))))))
 
 ;; Forth
 (use-package forth-mode

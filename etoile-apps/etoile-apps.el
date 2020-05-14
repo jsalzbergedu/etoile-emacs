@@ -104,6 +104,8 @@ Inserted by installing org-mode or when a release is made."
 	org-fontify-whole-heading-line t
 	org-startup-indented t
         org-src-fontify-natively t)
+  (setq org-agenda-files
+        (file-expand-wildcards "~/Programming/projects/*.org"))
   (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)
                                                            (emacs-lisp . t)
                                                            (scheme . t)

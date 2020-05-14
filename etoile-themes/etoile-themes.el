@@ -43,7 +43,7 @@
                     :font "League Mono")
 
 (set-face-attribute 'default nil
-                    :height 100
+                    :height 120
                     :family "Inconsolata LGC")
 
 (defface etoile-themes-linum-fira '((t :inherit linum :family "Fira Mono"))
@@ -90,9 +90,7 @@
 
 ;; (set-fontset-font "-PfEd-Inconsolata LGC-normal-normal-normal-*-16-*-*-*-m-0-fontset-auto2" '(#x2502 . #x2502) "Fira Mono" (car (frame-list)))
 
-;; Mode line
-(setq display-battery-mode t)
-
+;; Mode line (setq display-battery-mode t)
 ;; Emojis
 (use-package emojify
   :straight (emojify :type git
@@ -133,7 +131,7 @@
   :straight t
   :demand t
   :config
-  (load-theme 'doom-tomorrow-day t)
+  (load-theme 'doom-tomorrow-night t)
   (set-face-attribute 'font-lock-comment-face nil
                       :slant 'normal
                       :foreground "#a5a4a5")
