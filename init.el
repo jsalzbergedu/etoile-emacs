@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t -*-
+;; -*- lexical-binding: t; no-byte-compile: t -*-
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -35,5 +35,6 @@
   :straight (etoile :type git
                     :host github
                     :repo "jsalzbergedu/etoile-emacs"
+                    :no-native-compile t
                     :files ("etoile-emacs/*.el"))
   :demand t)

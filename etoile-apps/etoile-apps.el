@@ -60,34 +60,6 @@
                        :repo "wallyqs/ob-racket")
   :defer t)
 
-(defun org-git-version ()
-  "The Git version of org-mode.
-Inserted by installing org-mode or when a release is made."
-  (require 'git)
-  (let ((git-repo (expand-file-name
-                   "straight/repos/org/" user-emacs-directory)))
-    (string-trim
-     (git-run "describe"
-              "--match=release\*"
-              "--abbrev=6"
-              "HEAD"))))
-
-(defun org-release ()
-  "The release version of org-mode.
-Inserted by installing org-mode or when a release is made."
-  (require 'git)
-  (let ((git-repo (expand-file-name
-                   "straight/repos/org/" user-emacs-directory)))
-    (string-trim
-     (string-remove-prefix
-      "release_"
-      (git-run "describe"
-               "--match=release\*"
-               "--abbrev=0"
-               "HEAD")))))
-
-(provide 'org-version)
-
 (use-package org
   :defer t
   :straight nil
@@ -95,7 +67,6 @@ Inserted by installing org-mode or when a release is made."
   (straight-use-package 'org-plus-contrib)
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
   (setq org-default-notes-file "~/.emacs.d/notes.org")
-  (push "~/.emacs.d/agenda.org" org-agenda-files)
   :config
   (setq org-indent-indentation-per-level 1
 	org-ellipsis ":"
@@ -104,8 +75,6 @@ Inserted by installing org-mode or when a release is made."
 	org-fontify-whole-heading-line t
 	org-startup-indented t
         org-src-fontify-natively t)
-  (setq org-agenda-files
-        (file-expand-wildcards "~/Programming/projects/*.org"))
   (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)
                                                            (emacs-lisp . t)
                                                            (scheme . t)
@@ -114,7 +83,6 @@ Inserted by installing org-mode or when a release is made."
                                                            (racket . t)
                                                            (pie . t)
                                                            (dot . t)
-                                                           (jupyter . t)
                                                            (makefile . t)))
 
   ;;(ein:org-register-lang-mode "ein-c++" 'c++)
@@ -139,7 +107,11 @@ Inserted by installing org-mode or when a release is made."
 
 (use-package org-agenda
   :demand t
-  :after org)
+  :after org
+  :config
+  (setq org-agenda-files
+        (file-expand-wildcards "~/Programming/projects/*.org"))
+  (push "~/.emacs.d/agenda.org" org-agenda-files))
 
 (use-package ob-plantuml
   :init
@@ -282,6 +254,8 @@ Inserted by installing org-mode or when a release is made."
   (push '("'u" . "ù") letter-combinator-combinations))
 
 ;; Vterm (a real terminal implemented via compile time modules)
+(use-package vterm
+  :straight t)
 
 (use-package mu4e
   :straight nil

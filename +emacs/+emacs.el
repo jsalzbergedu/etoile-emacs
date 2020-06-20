@@ -1,4 +1,4 @@
-;;; +emacs.el --- Configuration for emacs variables -*- lexical-binding: t -*-
+;;; +emacs.el --- Configuration for emacs variables -*- lexical-binding: t; no-byte-compile: t -*-
 
 ;; Copyright © 2019 Jacob Salzberg
 

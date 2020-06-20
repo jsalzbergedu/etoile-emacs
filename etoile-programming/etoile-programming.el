@@ -804,9 +804,7 @@ _m_: dap-java-run-test-method"
 (use-package clang-format
   :demand t
   :after ccls
-  :straight (clang-format :type git
-                          :host github
-                          :repo "sonatard/clang-format")
+  :straight t
   :init
   (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
   (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
@@ -1230,13 +1228,20 @@ _m_: dap-java-run-test-method"
   :init
   (add-hook 'csv-mode-hook 'prog-minor-modes-common))
 
-(use-package lsp-lua-emmy
-  :demand t
-  :straight (lsp-lua-emmy :type git
-                          :host github
-                          :repo "phenix3443/lsp-lua-emmy")
-  :config
-  (setq lsp-lua-emmy-jar-path (expand-file-name "EmmyLua-LS-all.jar" user-emacs-directory)))
+(defvar lua-language-server-path nil)
+(setq lua-language-server-path (expand-file-name "lua-language-server/bin/Linux/lua-language-server" user-emacs-directory))
+
+(defvar lua-language-server-main-path nil)
+(setq lua-language-server-main-path (expand-file-name "lua-language-server/main.lua" user-emacs-directory))
+
+(defun lua-language-server-command ()
+  `(,lua-language-server-path "-E" ,lua-language-server-main-path))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection 'lua-language-server-command)
+                  :major-modes '(lua-mode)
+                  :server-id 'lua-language-server
+                  :priority 1))
 
 (use-package lua-mode
  :defer t
