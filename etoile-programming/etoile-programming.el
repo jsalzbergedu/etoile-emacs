@@ -47,6 +47,20 @@
 ;;;###autoload
 (add-hook 'prog-minor-modes-common 'nlinum-mode)
 
+;; Syntax highlighting through tree-sitter
+(use-package tree-sitter
+  :straight (tree-sitter :host github
+                         :repo "ubolonton/emacs-tree-sitter"
+                         :files ("lisp/*.el"))
+  :demand t
+  :config (global-tree-sitter-mode)
+  :hook ((tree-sitter-after-on . tree-sitter-hl-mode)))
+
+(use-package tree-sitter-langs
+              :straight (tree-sitter-langs :host github
+                                           :repo "ubolonton/emacs-tree-sitter"
+                                           :files ("langs/*.el" "langs/queries"))
+              :demand t)
 
 ;; Whitespace detection
 (defun show-trailing-whitespace ()
@@ -242,18 +256,15 @@ _j_: company-select-next-or-abort
                       :repo "emacs-lsp/lsp-mode")
   :init
   (setq lsp-prefer-flymake nil)
-  (setq lsp-enable-semantic-highlighting t)
+  (make-variable-buffer-local 'lsp-enable-semantic-highlighting)
+  (setq-default lsp-enable-semantic-highlighting t)
+  (setq lsp-prefer-capf t)
+  (setq lsp-semantic-highlighting-warn-on-missing-face t)
   :config
-  (setq lsp-inhibit-message t
-        lsp-print-io nil))
-
-;; LSP's completion package
-(use-package company-lsp
-  :demand t
-  :straight (company-lsp :type git
-                         :host github
-                         :repo "tigersoldier/company-lsp")
-  :config (add-to-list 'company-backend 'company-lsp))
+  (setq  lsp-log-io nil)
+  (setq gc-cons-threshold 100000000)
+  (when (boundp 'read-process-output-max)
+    (setq read-process-output-max (* 1024 1024))))
 
 ;; Required by dap-mode
 (use-package bui
@@ -625,6 +636,10 @@ _m_: dap-java-run-test-method"
                                   :repo "purcell/exec-path-from-shell")
   :demand t
   :config (exec-path-from-shell-initialize))
+
+(use-package font-lock-studio
+  :straight t
+  :defer t)
 
 (use-package elisp-mode
   :straight nil
@@ -1247,9 +1262,8 @@ _m_: dap-java-run-test-method"
  :defer t
  :straight t
  :hook ((lua-mode . prog-minor-modes-common)
-        (lua-mode . lsp))
- :config
- (add-to-list 'company-backend 'company-lua))
+        (lua-mode . lsp)
+        (lua-mode . (lambda () (setq lsp-enable-semantic-highlighting nil)))))
 
 (use-package lua-lambda
   :demand t

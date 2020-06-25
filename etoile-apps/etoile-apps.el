@@ -306,5 +306,10 @@
   :defer t
   :init (setq shell-pop-window-position "full"))
 
+;; Guix
+(use-package guix
+  :straight t
+  :defer t)
+
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here
