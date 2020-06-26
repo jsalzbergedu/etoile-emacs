@@ -55,8 +55,6 @@
   :demand t
   :config
   (global-tree-sitter-mode)
-  (set-face-attribute 'tree-sitter-hl-face:function.method nil
-                      :italic t)
   :hook ((tree-sitter-after-on . tree-sitter-hl-mode)))
 
 
@@ -64,7 +62,47 @@
               :straight (tree-sitter-langs :host github
                                            :repo "ubolonton/emacs-tree-sitter"
                                            :files ("langs/*.el" "langs/queries"))
-              :demand t)
+              :demand t
+              :config
+              (set-face-attribute 'tree-sitter-hl-face:function.method nil
+                                  :italic t))
+
+;; TODO move
+(defun +treesitter-rehighlight (beg end)
+  (goto-char beg)
+  (let ((case-fold-search nil))
+    (when (re-search-forward "/\\*\\*" end t nil)
+      (let ((o (make-overlay beg end)))
+        (overlay-put o '+treesitter-rehighlight t)
+        (overlay-put o 'face 'font-lock-doc-face)))
+    (goto-char beg)
+    (while (re-search-forward "@param\\|@author\\|@return\\|@see\\|@file" end t nil)
+      (let ((o (make-overlay (match-beginning 0) (match-end 0))))
+        (overlay-put o '+treesitter-rehighlight t)
+        (overlay-put o 'face 'font-lock-constant-face)))))
+
+(defun +treesitter-rehighlight--region (from upto)
+  (with-silent-modifications
+    (remove-overlays from upto '+treesitter-rehighlight t)
+    (save-excursion
+      (cl-loop for item across (tree-sitter-debug-query [((comment) @comment)]) do
+               (pcase-let* ((`(_ . ,node) item)
+                            (beg (ts-node-start-position node))
+                            (end (ts-node-end-position node)))
+                 (when (and (>= beg from)
+                            (<= end upto))
+                   (+treesitter-rehighlight beg end)))))))
+
+(define-minor-mode +treesitter-rehighlight-mode
+  "A minor mode for rehighlighting treesitter docstrings"
+  nil
+  nil
+  nil
+  (jit-lock-unregister #'+treesitter-rehighlight--region)
+  (remove-overlays (point-min) (point-max) '+treesitter-rehighlight t)
+  (when +treesitter-rehighlight-mode
+    (jit-lock-register #'+treesitter-rehighlight--region t)
+    (+treesitter-rehighlight--region (point-min) (point-max))))
 
 ;; Whitespace detection
 (defun show-trailing-whitespace ()
@@ -403,15 +441,14 @@ _j_: company-select-next-or-abort
   :config
   (setq flycheck-idle-change-delay 2))
 
-
 (use-package +projectile
   :demand t
-  :after (projectile counsel-projectile flycheck hydra lsp-ui)
+  :after (projectile counsel-projectile hydra)
   :straight (+projectile :type git
                          :host github
                          :repo "jsalzbergedu/etoile-emacs"
                          :files ("etoile-programming/+projectile/*.el"))
-  :general                              ;
+  :general
   (:states '(normal motion)
             "SPC p" '+projectile-hydra/body))
 
@@ -419,9 +456,7 @@ _j_: company-select-next-or-abort
 ;; LSP integration with flycheck
 (use-package lsp-ui
   :demand t
-  :straight (lsp-ui :type git
-                    :host github
-                    :repo "emacs-lsp/lsp-ui")
+  :straight t
   :config
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
   (set-face-attribute 'lsp-ui-sideline-code-action nil
@@ -574,12 +609,9 @@ _m_: dap-java-run-test-method"
                       :repo "emacs-lsp/lsp-java"
                       :files ("*.el" "icons" "install"))
   :config
-  ;; Use tree sitter for java fontification.
-  ;; Fixes problems such as
-  ;; "variable" being interpreted as a type
-  ;; in the expression 1 < variable
   (setq java-mode-syntax-table (make-syntax-table))
   (progn (add-hook 'java-mode-hook 'prog-minor-modes-common)
+         (add-hook 'java-mode-hook '+treesitter-rehighlight-mode)
 	 (add-hook 'java-mode-hook 'lsp)
 	 (add-hook 'java-mode-hook (lambda ()
 				                 (flycheck-mode 1)
@@ -1125,6 +1157,8 @@ _m_: dap-java-run-test-method"
   (add-to-list 'auto-mode-alist '("conanfile\\.txt\\'" . conf-mode))
   (add-hook 'c++-mode-hook #'+c-and-c++-config)
   (add-hook 'c-mode-hook #'+c-and-c++-config)
+  (add-hook 'c++-mode-hook '+treesitter-rehighlight-mode)
+  (add-hook 'c-mode-hook '+treesitter-rehighlight-mode)
   :config
   (+projectile-local-commands-add-type 'compiledb)
   (+projectile-local-commands-add-command 'compiledb :compile #'+cc-mode/compile)
