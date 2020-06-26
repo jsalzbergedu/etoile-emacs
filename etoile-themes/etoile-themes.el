@@ -131,7 +131,7 @@
   :straight t
   :demand t
   :config
-  (load-theme 'doom-tomorrow-night t)
+  (load-theme 'doom-material t)
   (set-face-attribute 'font-lock-comment-face nil
                       :slant 'normal
                       :foreground "#a5a4a5")

@@ -53,8 +53,12 @@
                          :repo "ubolonton/emacs-tree-sitter"
                          :files ("lisp/*.el"))
   :demand t
-  :config (global-tree-sitter-mode)
+  :config
+  (global-tree-sitter-mode)
+  (set-face-attribute 'tree-sitter-hl-face:function.method nil
+                      :italic t)
   :hook ((tree-sitter-after-on . tree-sitter-hl-mode)))
+
 
 (use-package tree-sitter-langs
               :straight (tree-sitter-langs :host github
@@ -440,7 +444,7 @@ _j_: company-select-next-or-abort
   :demand t
   :straight nil
   :config (add-hook 'lsp-after-open-hook
-                    (lambda () (lsp-ui-flycheck-enable 1))))
+                    (lambda () (lsp-flycheck-enable 1))))
 
 
 ;; All c-likes
@@ -570,6 +574,11 @@ _m_: dap-java-run-test-method"
                       :repo "emacs-lsp/lsp-java"
                       :files ("*.el" "icons" "install"))
   :config
+  ;; Use tree sitter for java fontification.
+  ;; Fixes problems such as
+  ;; "variable" being interpreted as a type
+  ;; in the expression 1 < variable
+  (setq java-mode-syntax-table (make-syntax-table))
   (progn (add-hook 'java-mode-hook 'prog-minor-modes-common)
 	 (add-hook 'java-mode-hook 'lsp)
 	 (add-hook 'java-mode-hook (lambda ()
@@ -1196,38 +1205,6 @@ _m_: dap-java-run-test-method"
   :init
   (setq plantuml-jar-path "/usr/share/plantuml/plantuml.jar"))
 
-;; Coq
-(use-package proof-general
-  :straight t
-  :defer t)
-
-;; Haskell
-(use-package haskell-mode
-  :straight (haskell-mode :type git
-                          :host github
-                          :repo "haskell/haskell-mode")
-  :init (setq haskell-process-type 'stack-ghci)
-  :hook ((haskell . prog-minor-modes-common))
-  :defer t)
-
-(use-package lsp-haskell
-  :straight t
-  :demand t
-  :after haskell-mode
-  :hook ((haskell-mode . lsp)))
-
-(use-package inf-haskell
-  :straight nil
-  :demand t
-  :after haskell-mode)
-
-;; F*
-(use-package fstar-mode
-  :straight (fstar-mode :type git
-                        :host github
-                        :repo "FStarLang/fstar-mode.el")
-  :defer t)
-
 ;; Unix config files
 (use-package conf-mode
   :defer t
@@ -1243,6 +1220,7 @@ _m_: dap-java-run-test-method"
   :init
   (add-hook 'csv-mode-hook 'prog-minor-modes-common))
 
+;; Lua
 (defvar lua-language-server-path nil)
 (setq lua-language-server-path (expand-file-name "lua-language-server/bin/Linux/lua-language-server" user-emacs-directory))
 
@@ -1307,48 +1285,40 @@ _m_: dap-java-run-test-method"
   :defer t
   :hook ((dune-mode . prog-minor-modes-common)))
 
-(use-package tuareg
-  :straight t
-  :defer t
-  :hook ((tuareg-mode . prog-minor-modes-common)
-         (tuareg-interactive-mode . prog-minor-modes-common)
-         (tuareg-opam-mode . prog-minor-modes-common)))
-
-(use-package merlin
-  :demand t
-  :straight (merlin :type git
-                    :host github
-                    :repo "ocaml/merlin"
-                    :files ("emacs/*.el"))
-  :after lsp
-  :hook ((tuareg-mode . merlin-mode))
-  :config
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection '("ocamlmerlin-server"))
-                    :major-modes '(tuareg-mode)
-                    :server-id 'merlin)))
-
-(use-package utop
-  :straight t
-  :demand t
-  :after tuareg
-  :config
-  (setq utop-command "opam config exec -- utop -emacs")
-  (setq utop-edit-command nil))
-
-(use-package ocp-indent
-  :straight t
-  :demand t)
-
-;; Nix expression language
-(use-package nix-mode
-  :straight t
-  :defer t
-  :hook ((nix-mode . prog-minor-modes-common)))
-
-(use-package nixos-options
-  :straight t
-  :defer t)
+;; Ocaml
+;; (use-package tuareg
+;;   :straight t
+;;   :defer t
+;;   :hook ((tuareg-mode . prog-minor-modes-common)
+;;          (tuareg-interactive-mode . prog-minor-modes-common)
+;;          (tuareg-opam-mode . prog-minor-modes-common)))
+;; 
+;; (use-package merlin
+;;   :demand t
+;;   :straight (merlin :type git
+;;                     :host github
+;;                     :repo "ocaml/merlin"
+;;                     :files ("emacs/*.el"))
+;;   :after lsp
+;;   :hook ((tuareg-mode . merlin-mode))
+;;   :config
+;;   (lsp-register-client
+;;    (make-lsp-client :new-connection (lsp-stdio-connection '("ocamlmerlin-server"))
+;;                     :major-modes '(tuareg-mode)
+;;                     :server-id 'merlin)))
+;; 
+;; (use-package utop
+;;   :straight t
+;;   :demand t
+;;   :after tuareg
+;;   :config
+;;   (setq utop-command "opam config exec -- utop -emacs")
+;;   (setq utop-edit-command nil))
+;; 
+;; (use-package ocp-indent
+;;   :straight t
+;;   :demand t)
+;; 
 
 ;; Pseudocode
 (use-package pseudocode-mode

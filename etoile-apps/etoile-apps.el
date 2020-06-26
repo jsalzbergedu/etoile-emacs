@@ -220,20 +220,6 @@
   :config
   (add-hook 'eww-mode-hook (lambda () (setq word-wrap t))))
 
-;; Get back to exwm later
-
-(use-package exwm
-  :straight t
-  :defer t)
-
-(use-package exwm-config
-  :demand t
-  :after (exwm)
-  :config
-  (advice-add 'exwm-config-ido :override (lambda () t))
-  (push (cons (kbd "<escape>") #'evil-normal-state) exwm-input-global-keys)
-  :commands exwm-config-default)
-
 ;; Letter combinations
 (use-package letter-combinator
   :straight (letter-combinator :type git
