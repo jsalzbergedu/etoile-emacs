@@ -404,6 +404,7 @@ _j_: company-select-next-or-abort
   :straight (personal-info :type git
                            :host github
                            :repo "jsalzbergedu/etoile-emacs"
+                           :branch "ubuntu"
                            :files ("personal-info/*.el")))
 
 (use-package project-init
