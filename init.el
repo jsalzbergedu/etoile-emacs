@@ -35,6 +35,7 @@
   :straight (etoile :type git
                     :host github
                     :repo "jsalzbergedu/etoile-emacs"
+                    :branch "ubuntu"
                     :no-native-compile t
                     :files ("etoile-emacs/*.el"))
   :demand t)
