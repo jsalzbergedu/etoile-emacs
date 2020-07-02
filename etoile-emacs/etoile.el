@@ -30,6 +30,7 @@
   :straight (+emacs :type git
                     :host github
                     :repo "jsalzbergedu/etoile-emacs"
+                    :branch "ubuntu"
                     :no-native-compile t
                     :files ("+emacs/*.el"))
   :demand t)
@@ -38,6 +39,7 @@
   :straight (etoile-themes :type git
                            :host github
                            :repo "jsalzbergedu/etoile-emacs"
+                           :branch "ubuntu"
                            :no-native-compile t
                            :files ("etoile-themes/*.el"))
   :demand t)
@@ -46,6 +48,7 @@
   :straight (etoile-keybindings :type git
                                 :host github
                                 :repo "jsalzbergedu/etoile-emacs"
+                                :branch "ubuntu"
                                 :no-native-compile t
                                 :files ("etoile-keybindings/*.el"))
   :demand t)
@@ -54,6 +57,7 @@
   :straight (etoile-programming :type git
                                 :host github
                                 :repo "jsalzbergedu/etoile-emacs"
+                                :branch "ubuntu"
                                 :no-native-compile t
                                 :files ("etoile-programming/*.el"))
   :demand t)
@@ -62,6 +66,7 @@
   :straight (etoile-apps :type git
                          :host github
                          :repo "jsalzbergedu/etoile-emacs"
+                         :branch "ubuntu"
                          :no-native-compile t
                          :files ("etoile-apps/*.el"))
  :demand t)

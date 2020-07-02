@@ -29,6 +29,7 @@
 (use-package passwords
   :straight (passwords :type git
                        :host github
+                       :branch "ubuntu"
                        :repo "jsalzbergedu/etoile-emacs"
                        :files ("passwords/*"))
   :demand t)

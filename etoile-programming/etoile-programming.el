@@ -177,6 +177,7 @@
   :straight (+prettify-utils :type git
                              :host github
                              :repo "jsalzbergedu/etoile-emacs"
+                             :branch "ubuntu"
                              :files ("etoile-programming/+prettify-utils/*.el"))
   :config
   (add-hook 'prog-minor-modes-common 'prettify-symbols-mode))
@@ -477,6 +478,7 @@ _j_: company-select-next-or-abort
   :straight (+projectile :type git
                          :host github
                          :repo "jsalzbergedu/etoile-emacs"
+                         :branch "ubuntu"
                          :files ("etoile-programming/+projectile/*.el"))
   :general
   (:states '(normal motion)
