@@ -33,7 +33,7 @@
 
 (use-package general
   :demand t
-  :straight t
+  :straight (general :no-native-compile t)
   :init
   (eval-and-compile
     (require 'general)))
@@ -140,6 +140,7 @@
   (:keymaps '(dired-mode-map)
             "SPC" nil))
 
+
 (use-package help-mode
   :defer t
   :straight nil
@@ -156,16 +157,17 @@
   (substitute-key-definition 'Info-help 'evil-backward-char Info-mode-map)
   (substitute-key-definition 'Info-history-back 'evil-forward-char Info-mode-map))
   ;; (evil-define-key 'normal 'Info-mode-map (kbd "p") 'Info-prev))
+;; 
+;; ;; ;; Ivy, Swiper, Counil, Flx, and Amx
+;; flx native compile breaks ivy
+(use-package flx
+  :straight (flx :no-native-compile t)
+  :demand t)
 
-;; Ivy, Swiper, Counil, Flx, and Amx
 (use-package swiper
   :straight t
   :general
   ("C-s" 'swiper))
-
-(use-package flx
-  :straight t
-  :defer t)
 
 (use-package ivy
   :demand t

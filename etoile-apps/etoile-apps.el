@@ -294,7 +294,7 @@
 
 ;; Guix
 (use-package guix
-  :straight t
+  :straight (guix :no-native-compile t)
   :defer t)
 
 (provide 'etoile-apps)

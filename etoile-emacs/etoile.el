@@ -64,7 +64,7 @@
                          :repo "jsalzbergedu/etoile-emacs"
                          :no-native-compile t
                          :files ("etoile-apps/*.el"))
-  :demand t)
+ :demand t)
 
 (provide 'etoile)
 ;;; etoile.el ends here

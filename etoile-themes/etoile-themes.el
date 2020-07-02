@@ -131,13 +131,11 @@
   :straight t
   :demand t
   :config
-  (load-theme 'doom-material t)
+  (load-theme 'doom-one-light t)
   (set-face-attribute 'font-lock-comment-face nil
-                      :slant 'normal
-                      :foreground "#a5a4a5")
+                      :slant 'normal)
   (set-face-attribute 'font-lock-doc-face nil
-                      :slant 'italic
-                      :foreground "#a5a4a5"))
+                      :slant 'italic))
 
 ;; TODO: MOVE TO LSP-UI
 ;; (set-face-attribute 'lsp-ui-sideline-code-action nil

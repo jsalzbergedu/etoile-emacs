@@ -51,7 +51,8 @@
 (use-package tree-sitter
   :straight (tree-sitter :host github
                          :repo "ubolonton/emacs-tree-sitter"
-                         :files ("lisp/*.el"))
+                         :files ("lisp/*.el")
+                         :no-native-compile t)
   :demand t
   :config
   (global-tree-sitter-mode)
@@ -61,7 +62,8 @@
 (use-package tree-sitter-langs
               :straight (tree-sitter-langs :host github
                                            :repo "ubolonton/emacs-tree-sitter"
-                                           :files ("langs/*.el" "langs/queries"))
+                                           :files ("langs/*.el" "langs/queries")
+                                           :no-native-compile t)
               :demand t
               :config
               (set-face-attribute 'tree-sitter-hl-face:function.method nil
@@ -81,17 +83,32 @@
         (overlay-put o '+treesitter-rehighlight t)
         (overlay-put o 'face 'font-lock-constant-face)))))
 
+(let ((cache (ht-create)))
+  (defun +treesitter-comment-query (tree-sitter-language)
+    (-if-let (cached (ht-get cache tree-sitter-language))
+        cached
+      (ht-set cache tree-sitter-language
+              (ts-make-query tree-sitter-language [((comment) @comment)]))
+      (+treesitter-comment-query tree-sitter-language))))
+
 (defun +treesitter-rehighlight--region (from upto)
-  (with-silent-modifications
-    (remove-overlays from upto '+treesitter-rehighlight t)
-    (save-excursion
-      (cl-loop for item across (tree-sitter-debug-query [((comment) @comment)]) do
-               (pcase-let* ((`(_ . ,node) item)
-                            (beg (ts-node-start-position node))
-                            (end (ts-node-end-position node)))
-                 (when (and (>= beg from)
-                            (<= end upto))
-                   (+treesitter-rehighlight beg end)))))))
+  ;; SADLY, from and upto are usually not quite right
+  (setq from (point-min))
+  (setq upto (point-max))
+  (when (and tree-sitter-language tree-sitter-tree)
+      (with-silent-modifications
+        (remove-overlays from upto '+treesitter-rehighlight t)
+        (save-excursion
+          (let* ((query (+treesitter-comment-query tree-sitter-language))
+                 (root-node (ts-root-node tree-sitter-tree))
+                 (comments (ts-query-captures query root-node #'ts--buffer-substring-no-properties)))
+            (cl-loop for item across comments do
+                     (pcase-let* ((`(_ . ,node) item)
+                                  (beg (ts-node-start-position node))
+                                  (end (ts-node-end-position node)))
+                       (when (and (>= beg from)
+                                  (<= end upto))
+                         (+treesitter-rehighlight beg end)))))))))
 
 (define-minor-mode +treesitter-rehighlight-mode
   "A minor mode for rehighlighting treesitter docstrings"
@@ -138,6 +155,9 @@
     (ansi-color-apply-on-region compilation-filter-start (point))
     (toggle-read-only))
   (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+  ;; Add luaunit links:
+  (push `("^[\t]*\\([^ (].*\\):\\([1-9][0-9]*\\): " 1 2 nil)
+        compilation-error-regexp-alist)
   :general
   (:keymaps '(compilation-mode-map)
             "SPC" nil))
@@ -295,18 +315,28 @@ _j_: company-select-next-or-abort
   :demand t
   :straight (lsp-mode :type git
                       :host github
-                      :repo "emacs-lsp/lsp-mode")
+                      :repo "sebastiansturm/lsp-mode")
   :init
   (setq lsp-prefer-flymake nil)
-  (make-variable-buffer-local 'lsp-enable-semantic-highlighting)
-  (setq-default lsp-enable-semantic-highlighting t)
   (setq lsp-prefer-capf t)
   (setq lsp-semantic-highlighting-warn-on-missing-face t)
   :config
+  (make-variable-buffer-local 'lsp-enable-semantic-highlighting)
+  (setq-default lsp-enable-semantic-highlighting t)
   (setq  lsp-log-io nil)
   (setq gc-cons-threshold 100000000)
   (when (boundp 'read-process-output-max)
-    (setq read-process-output-max (* 1024 1024))))
+    (setq read-process-output-max (* 1024 1024)))
+  (push `("documentation" . font-lock-doc-face) lsp-semantic-token-modifier-faces)
+  (defface +lsp-mode-global-variable-face
+    '((t :weight extra-bold))
+    "Face for semantic highlighted global variables")
+  (push `("static" . +lsp-mode-global-variable-face) lsp-semantic-token-modifier-faces)
+  (defface +lsp-mode-abstract-face
+    '((t :slant italic))
+    "Face for semantic highlighted abstract classes")
+  (push `("abstract" . +lsp-mode-abstract-face) lsp-semantic-token-modifier-faces)
+  (push `("deprecated" . shadow) lsp-semantic-token-modifier-faces))
 
 ;; Required by dap-mode
 (use-package bui
@@ -706,30 +736,37 @@ _m_: dap-java-run-test-method"
   (put-text-property (region-beginning) (region-end) 'face face))
 
 ;; Common Lisp:
-(use-package slime-autoloads
-  :demand t
-  :straight (slime-autoloads :type git
-                             :host github
-                             :repo "slime/slime"
-                             :files ("slime-autoloads.el")))
+;; (use-package slime-autoloads
+;;   :demand t
+;;   :straight (slime-autoloads :type git
+;;                              :host github
+;;                              :repo "slime/slime"
+;;                              :files ("slime-autoloads.el")))
 
-(use-package slime
+;; (use-package slime
+;;   :defer t
+;;   :straight (slime :type git
+;;                    :host github
+;;                    :repo "slime/slime"
+;;                    :files ("*"))
+;;   :config
+;;   (add-to-list 'slime-contribs 'slime-fancy)
+;;   (if (file-exists-p (expand-file-name "/usr/lib/quicklisp/slime-helper.el"))
+;;       (load (expand-file-name "/usr/lib/quicklisp/slime-helper.el"))
+;;     (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
+;;       (load (expand-file-name "~/quicklisp/slime-helper.el"))))
+;;   (setq inferior-lisp-program "/usr/bin/sbcl")
+;;   (put 'inferior-lisp-program 'safe-local-variable #'stringp)
+;;   (add-prog-minor-modes-common 'lisp-mode-hook 'slime-repl-mode-hook)
+;;   :init
+;;   (add-hook 'lisp-mode-hook 'prog-minor-modes-common))
+(use-package sly
+  :straight t
   :defer t
-  :straight (slime :type git
-                   :host github
-                   :repo "slime/slime"
-                   :files ("*"))
   :config
-  (add-to-list 'slime-contribs 'slime-fancy)
-  (if (file-exists-p (expand-file-name "/usr/lib/quicklisp/slime-helper.el"))
-      (load (expand-file-name "/usr/lib/quicklisp/slime-helper.el"))
-    (when (file-exists-p (expand-file-name "~/quicklisp/slime-helper.el"))
-      (load (expand-file-name "~/quicklisp/slime-helper.el"))))
-  (setq inferior-lisp-program "/usr/bin/sbcl")
-  (put 'inferior-lisp-program 'safe-local-variable #'stringp)
-  (add-prog-minor-modes-common 'lisp-mode-hook 'slime-repl-mode-hook)
-  :init
-  (add-hook 'lisp-mode-hook 'prog-minor-modes-common))
+  (setq inferior-lisp-program "sbcl")
+  :hook ((lisp-mode . prog-minor-modes-common)
+         (sly-mrepl-mode . prog-minor-modes-common)))
 
 ;; Scheme
 (use-package scheme-complete
@@ -1275,7 +1312,7 @@ _m_: dap-java-run-test-method"
  :straight t
  :hook ((lua-mode . prog-minor-modes-common)
         (lua-mode . lsp)
-        (lua-mode . (lambda () (setq lsp-enable-semantic-highlighting nil)))))
+        (lua-mode . (lambda () (setq-local lsp-enable-semantic-highlighting nil)))))
 
 (use-package lua-lambda
   :demand t
@@ -1285,6 +1322,13 @@ _m_: dap-java-run-test-method"
                         :repo "jsalzbergedu/lua-lambda-emacs")
   :hook ((lua-mode . lua-lambda-mode)))
 
+(use-package realgud-mobdebug
+  :straight (realgud-mobdebug :type git
+                              :host github
+                              :repo "jsalzbergedu/realgud-mobdebug"
+                              :files ("*"))
+  :defer t
+  :commands (realgud:mobdebug))
 
 ;; Rosie Pattern language
 (use-package rpl-mode
