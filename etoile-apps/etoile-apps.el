@@ -175,13 +175,6 @@
         erc-stamp-mode t
         erc-track-minor-mode t))
 
-(use-package org-pdfview
-  :demand t
-  :after org
-  :straight (org-pdfview :type git
-                         :host github
-                         :repo "markus1189/org-pdfview"))
-
 (use-package ansi-term
   :straight nil
   :defer t
@@ -203,15 +196,24 @@
   :init (setq gitter-token (passwords-get 'gitter)))
 
 ;; PDF tools
+(defun +pdf-tools-prefetch-start-advice (f &rest args)
+  (condition-case nil
+      (apply f args)
+    (error nil)))
+
 (use-package pdf-tools
-  :straight t
+  :straight (pdf-tools :no-native-compile t)
   :defer t
   :init
   (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
+  :config
+  (advice-add 'pdf-cache--prefetch-start :around '+pdf-tools-prefetch-start-advice)
   :general
   (:keymaps '(pdf-view-mode-map)
             "J" 'pdf-view-shrink
-            "K" 'pdf-view-enlarge)
+            "K" 'pdf-view-enlarge
+            "C-f" 'pdf-tools-next-page
+            "C-b" 'pdf-tools-previous-page)
   :commands pdf-view-mode)
 
 ;; eww

@@ -161,7 +161,8 @@
 ;; ;; ;; Ivy, Swiper, Counil, Flx, and Amx
 ;; flx native compile breaks ivy
 (use-package flx
-  :straight (flx :no-native-compile t)
+  :straight t
+  ;; (flx :no-native-compile t)
   :demand t)
 
 (use-package swiper

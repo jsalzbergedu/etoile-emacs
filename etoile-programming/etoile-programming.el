@@ -314,9 +314,7 @@ _j_: company-select-next-or-abort
 ;; The lsp modes don't play nice with lazy loading
 (use-package lsp-mode
   :demand t
-  :straight (lsp-mode :type git
-                      :host github
-                      :repo "sebastiansturm/lsp-mode")
+  :straight t
   :init
   (setq lsp-prefer-flymake nil)
   (setq lsp-prefer-capf t)
