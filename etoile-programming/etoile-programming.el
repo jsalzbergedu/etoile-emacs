@@ -48,78 +48,78 @@
 (add-hook 'prog-minor-modes-common 'nlinum-mode)
 
 ;; Syntax highlighting through tree-sitter
-(use-package tree-sitter
-  :straight (tree-sitter :host github
-                         :repo "ubolonton/emacs-tree-sitter"
-                         :files ("lisp/*.el")
-                         :no-native-compile t)
-  :demand t
-  :config
-  (global-tree-sitter-mode)
-  :hook ((tree-sitter-after-on . tree-sitter-hl-mode)))
+;; (use-package tree-sitter
+;;   :straight (tree-sitter :host github
+;;                          :repo "ubolonton/emacs-tree-sitter"
+;;                          :files ("lisp/*.el")
+;;                          :no-native-compile t)
+;;   :demand t
+;;   :config
+;;   (global-tree-sitter-mode)
+;;   :hook ((tree-sitter-after-on . tree-sitter-hl-mode)))
 
 
-(use-package tree-sitter-langs
-              :straight (tree-sitter-langs :host github
-                                           :repo "ubolonton/emacs-tree-sitter"
-                                           :files ("langs/*.el" "langs/queries")
-                                           :no-native-compile t)
-              :demand t
-              :config
-              (set-face-attribute 'tree-sitter-hl-face:function.method nil
-                                  :italic t))
+;; (use-package tree-sitter-langs
+;;               :straight (tree-sitter-langs :host github
+;;                                            :repo "ubolonton/emacs-tree-sitter"
+;;                                            :files ("langs/*.el" "langs/queries")
+;;                                            :no-native-compile t)
+;;               :demand t
+;;               :config
+;;               (set-face-attribute 'tree-sitter-hl-face:function.method nil
+;;                                   :italic t))
 
-;; TODO move
-(defun +treesitter-rehighlight (beg end)
-  (goto-char beg)
-  (let ((case-fold-search nil))
-    (when (re-search-forward "/\\*\\*" end t nil)
-      (let ((o (make-overlay beg end)))
-        (overlay-put o '+treesitter-rehighlight t)
-        (overlay-put o 'face 'font-lock-doc-face)))
-    (goto-char beg)
-    (while (re-search-forward "@param\\|@author\\|@return\\|@see\\|@file" end t nil)
-      (let ((o (make-overlay (match-beginning 0) (match-end 0))))
-        (overlay-put o '+treesitter-rehighlight t)
-        (overlay-put o 'face 'font-lock-constant-face)))))
+;; ;; TODO move
+;; (defun +treesitter-rehighlight (beg end)
+;;   (goto-char beg)
+;;   (let ((case-fold-search nil))
+;;     (when (re-search-forward "/\\*\\*" end t nil)
+;;       (let ((o (make-overlay beg end)))
+;;         (overlay-put o '+treesitter-rehighlight t)
+;;         (overlay-put o 'face 'font-lock-doc-face)))
+;;     (goto-char beg)
+;;     (while (re-search-forward "@param\\|@author\\|@return\\|@see\\|@file" end t nil)
+;;       (let ((o (make-overlay (match-beginning 0) (match-end 0))))
+;;         (overlay-put o '+treesitter-rehighlight t)
+;;         (overlay-put o 'face 'font-lock-constant-face)))))
 
-(let ((cache (ht-create)))
-  (defun +treesitter-comment-query (tree-sitter-language)
-    (-if-let (cached (ht-get cache tree-sitter-language))
-        cached
-      (ht-set cache tree-sitter-language
-              (ts-make-query tree-sitter-language [((comment) @comment)]))
-      (+treesitter-comment-query tree-sitter-language))))
+;; (let ((cache (ht-create)))
+;;   (defun +treesitter-comment-query (tree-sitter-language)
+;;     (-if-let (cached (ht-get cache tree-sitter-language))
+;;         cached
+;;       (ht-set cache tree-sitter-language
+;;               (ts-make-query tree-sitter-language [((comment) @comment)]))
+;;       (+treesitter-comment-query tree-sitter-language))))
 
-(defun +treesitter-rehighlight--region (from upto)
-  ;; SADLY, from and upto are usually not quite right
-  (setq from (point-min))
-  (setq upto (point-max))
-  (when (and tree-sitter-language tree-sitter-tree)
-      (with-silent-modifications
-        (remove-overlays from upto '+treesitter-rehighlight t)
-        (save-excursion
-          (let* ((query (+treesitter-comment-query tree-sitter-language))
-                 (root-node (ts-root-node tree-sitter-tree))
-                 (comments (ts-query-captures query root-node #'ts--buffer-substring-no-properties)))
-            (cl-loop for item across comments do
-                     (pcase-let* ((`(_ . ,node) item)
-                                  (beg (ts-node-start-position node))
-                                  (end (ts-node-end-position node)))
-                       (when (and (>= beg from)
-                                  (<= end upto))
-                         (+treesitter-rehighlight beg end)))))))))
+;; (defun +treesitter-rehighlight--region (from upto)
+;;   ;; SADLY, from and upto are usually not quite right
+;;   (setq from (point-min))
+;;   (setq upto (point-max))
+;;   (when (and tree-sitter-language tree-sitter-tree)
+;;       (with-silent-modifications
+;;         (remove-overlays from upto '+treesitter-rehighlight t)
+;;         (save-excursion
+;;           (let* ((query (+treesitter-comment-query tree-sitter-language))
+;;                  (root-node (ts-root-node tree-sitter-tree))
+;;                  (comments (ts-query-captures query root-node #'ts--buffer-substring-no-properties)))
+;;             (cl-loop for item across comments do
+;;                      (pcase-let* ((`(_ . ,node) item)
+;;                                   (beg (ts-node-start-position node))
+;;                                   (end (ts-node-end-position node)))
+;;                        (when (and (>= beg from)
+;;                                   (<= end upto))
+;;                          (+treesitter-rehighlight beg end)))))))))
 
-(define-minor-mode +treesitter-rehighlight-mode
-  "A minor mode for rehighlighting treesitter docstrings"
-  nil
-  nil
-  nil
-  (jit-lock-unregister #'+treesitter-rehighlight--region)
-  (remove-overlays (point-min) (point-max) '+treesitter-rehighlight t)
-  (when +treesitter-rehighlight-mode
-    (jit-lock-register #'+treesitter-rehighlight--region t)
-    (+treesitter-rehighlight--region (point-min) (point-max))))
+;; (define-minor-mode +treesitter-rehighlight-mode
+;;   "A minor mode for rehighlighting treesitter docstrings"
+;;   nil
+;;   nil
+;;   nil
+;;   (jit-lock-unregister #'+treesitter-rehighlight--region)
+;;   (remove-overlays (point-min) (point-max) '+treesitter-rehighlight t)
+;;   (when +treesitter-rehighlight-mode
+;;     (jit-lock-register #'+treesitter-rehighlight--region t)
+;;     (+treesitter-rehighlight--region (point-min) (point-max))))
 
 ;; Whitespace detection
 (defun show-trailing-whitespace ()
@@ -640,9 +640,7 @@ _m_: dap-java-run-test-method"
                       :repo "emacs-lsp/lsp-java"
                       :files ("*.el" "icons" "install"))
   :config
-  (setq java-mode-syntax-table (make-syntax-table))
   (progn (add-hook 'java-mode-hook 'prog-minor-modes-common)
-         (add-hook 'java-mode-hook '+treesitter-rehighlight-mode)
 	 (add-hook 'java-mode-hook 'lsp)
 	 (add-hook 'java-mode-hook (lambda ()
 				                 (flycheck-mode 1)
@@ -1311,6 +1309,8 @@ _m_: dap-java-run-test-method"
 (use-package lua-mode
  :defer t
  :straight t
+ :init
+ (setq lua-default-application "rep.lua")
  :hook ((lua-mode . prog-minor-modes-common)
         (lua-mode . lsp)
         (lua-mode . (lambda () (setq-local lsp-enable-semantic-highlighting nil)))))

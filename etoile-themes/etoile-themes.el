@@ -127,6 +127,10 @@
 ;;   :demand t
 ;;   :config (load-theme 'flatui t))
 
+(use-package all-the-icons
+  :straight t
+  :defer t)
+
 (use-package doom-themes
   :straight t
   :demand t
@@ -135,7 +139,8 @@
   (set-face-attribute 'font-lock-comment-face nil
                       :slant 'normal)
   (set-face-attribute 'font-lock-doc-face nil
-                      :slant 'italic))
+                      :slant 'italic)
+  (doom-themes-treemacs-config))
 
 ;; TODO: MOVE TO LSP-UI
 ;; (set-face-attribute 'lsp-ui-sideline-code-action nil

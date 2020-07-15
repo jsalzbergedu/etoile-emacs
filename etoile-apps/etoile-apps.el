@@ -1,4 +1,4 @@
-;;; etoile-apps.el --- Configuration of applications for etoile
+;;; etoile-apps.el --- Configuration of applications for etoile -*- lexical-binding: t -*-
 
 ;; Copyright © 2019 Jacob Salzberg
 
@@ -243,8 +243,21 @@
   (push '("'u" . "ù") letter-combinator-combinations))
 
 ;; Vterm (a real terminal implemented via compile time modules)
+(declare-function +vterm-kill-whole-line)
+
 (use-package vterm
-  :straight t)
+  :straight t
+  :hook
+  ((vterm-mode . (lambda () (push '+bash-completion-vterm-capf completion-at-point-functions))))
+  :general
+  (:keymaps '(vterm-mode-map) :states '(normal motion)
+            "D" '+vterm-kill-whole-line))
+
+(defun +vterm-kill-whole-line ()
+  (interactive)
+  (kill-new (buffer-substring-no-properties (point) (vterm-end-of-line)))
+  (vterm-send-C-a)
+  (vterm-send-C-k))
 
 (use-package mu4e
   :straight nil

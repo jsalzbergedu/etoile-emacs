@@ -40,3 +40,4 @@
                     :no-native-compile t
                     :files ("etoile-emacs/*.el"))
   :demand t)
+(put 'magit-clean 'disabled nil)
