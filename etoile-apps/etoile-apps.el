@@ -202,12 +202,13 @@
     (error nil)))
 
 (use-package pdf-tools
-  :straight (pdf-tools :no-native-compile t)
+  :straight t
   :defer t
   :init
   (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
   :config
-  (advice-add 'pdf-cache--prefetch-start :around '+pdf-tools-prefetch-start-advice)
+  (make-directory "~/.emacs.d/epdfinfo" :parents)
+  (setq pdf-info-epdfinfo-program "~/.emacs.d/epdfinfo/epdfinfo")
   :general
   (:keymaps '(pdf-view-mode-map)
             "J" 'pdf-view-shrink
@@ -243,21 +244,21 @@
   (push '("'u" . "ù") letter-combinator-combinations))
 
 ;; Vterm (a real terminal implemented via compile time modules)
-(declare-function +vterm-kill-whole-line)
+;; (declare-function +vterm-kill-whole-line)
 
-(use-package vterm
-  :straight t
-  :hook
-  ((vterm-mode . (lambda () (push '+bash-completion-vterm-capf completion-at-point-functions))))
-  :general
-  (:keymaps '(vterm-mode-map) :states '(normal motion)
-            "D" '+vterm-kill-whole-line))
+;; (use-package vterm
+;;   :straight t
+;;   :hook
+;;   ((vterm-mode . (lambda () (push '+bash-completion-vterm-capf completion-at-point-functions))))
+;;   :general
+;;   (:keymaps '(vterm-mode-map) :states '(normal motion)
+;;             "D" '+vterm-kill-whole-line))
 
-(defun +vterm-kill-whole-line ()
-  (interactive)
-  (kill-new (buffer-substring-no-properties (point) (vterm-end-of-line)))
-  (vterm-send-C-a)
-  (vterm-send-C-k))
+;; (defun +vterm-kill-whole-line ()
+;;   (interactive)
+;;   (kill-new (buffer-substring-no-properties (point) (vterm-end-of-line)))
+;;   (vterm-send-C-a)
+;;   (vterm-send-C-k))
 
 (use-package mu4e
   :straight nil

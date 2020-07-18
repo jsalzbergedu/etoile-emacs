@@ -159,10 +159,8 @@
   ;; (evil-define-key 'normal 'Info-mode-map (kbd "p") 'Info-prev))
 ;; 
 ;; ;; ;; Ivy, Swiper, Counil, Flx, and Amx
-;; flx native compile breaks ivy
 (use-package flx
   :straight t
-  ;; (flx :no-native-compile t)
   :demand t)
 
 (use-package swiper
