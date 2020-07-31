@@ -214,7 +214,8 @@
             "J" 'pdf-view-shrink
             "K" 'pdf-view-enlarge
             "C-f" 'pdf-tools-next-page
-            "C-b" 'pdf-tools-previous-page)
+            "C-b" 'pdf-tools-previous-page
+            "C-u" 'universal-argument)
   :commands pdf-view-mode)
 
 ;; eww
@@ -307,7 +308,7 @@
 (use-package shell-pop
   :straight t
   :defer t
-  :init (setq shell-pop-window-position "full"))
+  :init (setq shell-pop-window-position "bottom"))
 
 ;; Guix
 (use-package guix

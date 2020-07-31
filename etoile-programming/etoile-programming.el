@@ -785,26 +785,30 @@ _m_: dap-java-run-test-method"
   :commands geiser-mode)
 
 ;; Rust:
-(use-package rustic
-  :demand t
-  :after rust-mode
-  :straight t
-  :config
-  (add-hook 'rustic-mode-hook 'prog-minor-modes-common)
-  (add-hook 'rustic-mode-hook (lambda ()
-                                (add-to-list 'flycheck-checkers 'lsp-ui)))
-  (add-hook 'rustic-mode-hook 'lsp)
-  (sp-with-modes '(rustic-mode)
-    (sp-local-pair "'" "'"
-                   :unless '(sp-in-comment-p sp-in-string-quotes-p sp-in-rust-lifetime-context)
-                   :post-handlers'(:rem sp-escape-quotes-after-insert))
-    (sp-local-pair "<" ">"
-                   :when '(sp-rust-filter-angle-brackets)
-                   :skip-match 'sp-rust-skip-match-angle-bracket))
+;; (use-package rustic
+;;   :demand t
+;;   :after rust-mode
+;;   :straight t
+;;   :config
+;;   (add-hook 'rustic-mode-hook 'prog-minor-modes-common)
+;;   (add-hook 'rustic-mode-hook (lambda ()
+;;                                 (add-to-list 'flycheck-checkers 'lsp-ui)))
+;;   (add-hook 'rustic-mode-hook 'lsp)
+;;   (sp-with-modes '(rustic-mode)
+;;     (sp-local-pair "'" "'"
+;;                    :unless '(sp-in-comment-p sp-in-string-quotes-p sp-in-rust-lifetime-context)
+;;                    :post-handlers'(:rem sp-escape-quotes-after-insert))
+;;     (sp-local-pair "<" ">"
+;;                    :when '(sp-rust-filter-angle-brackets)
+;;                    :skip-match 'sp-rust-skip-match-angle-bracket))
 
-  ;; Rust has no sexp suffices.  This fixes slurping
-  ;; (|foo).bar -> (foo.bar)
-  (add-to-list 'sp-sexp-suffix (list #'rustic-mode 'regexp "")))
+;;   ;; Rust has no sexp suffices.  This fixes slurping
+;;   ;; (|foo).bar -> (foo.bar)
+;;   (add-to-list 'sp-sexp-suffix (list #'rustic-mode 'regexp "")))
+
+(use-package rust-mode
+  :straight t
+  :defer t)
 
 (use-package lsp-rust
   :demand t
@@ -1193,8 +1197,6 @@ _m_: dap-java-run-test-method"
   (add-to-list 'auto-mode-alist '("conanfile\\.txt\\'" . conf-mode))
   (add-hook 'c++-mode-hook #'+c-and-c++-config)
   (add-hook 'c-mode-hook #'+c-and-c++-config)
-  (add-hook 'c++-mode-hook '+treesitter-rehighlight-mode)
-  (add-hook 'c-mode-hook '+treesitter-rehighlight-mode)
   :config
   (+projectile-local-commands-add-type 'compiledb)
   (+projectile-local-commands-add-command 'compiledb :compile #'+cc-mode/compile)
@@ -1330,6 +1332,12 @@ _m_: dap-java-run-test-method"
                               :files ("*"))
   :defer t
   :commands (realgud:mobdebug))
+
+;; Graphviz
+(use-package graphviz-dot-mode
+  :straight t
+  :defer t
+  :hook ((graphviz-dot-mode . prog-minor-modes-common)))
 
 ;; Rosie Pattern language
 (use-package rpl-mode
