@@ -245,21 +245,11 @@
   (push '("'u" . "ù") letter-combinator-combinations))
 
 ;; Vterm (a real terminal implemented via compile time modules)
-;; (declare-function +vterm-kill-whole-line)
-
-;; (use-package vterm
-;;   :straight t
-;;   :hook
-;;   ((vterm-mode . (lambda () (push '+bash-completion-vterm-capf completion-at-point-functions))))
-;;   :general
-;;   (:keymaps '(vterm-mode-map) :states '(normal motion)
-;;             "D" '+vterm-kill-whole-line))
-
-;; (defun +vterm-kill-whole-line ()
-;;   (interactive)
-;;   (kill-new (buffer-substring-no-properties (point) (vterm-end-of-line)))
-;;   (vterm-send-C-a)
-;;   (vterm-send-C-k))
+(use-package vterm
+  :demand t
+  :straight t
+  :config
+  (setq vterm-module-cmake-args "-DUSE_SYSTEM_LIBVTERM=no"))
 
 (use-package mu4e
   :straight nil

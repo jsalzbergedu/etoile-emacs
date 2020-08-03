@@ -522,16 +522,6 @@ _j_: company-select-next-or-abort
                             :branch "gh-pages"
                             :files ("*.el")))
 
-;; Packages for using jupyter notebooks
-;; (use-package ein
-;;   :defer t
-;;   :straight t
-;;   :commands ein:org-register-lang-mode)
-
-(use-package jupyter
-  :defer t
-  :straight t)
-
 ;; Python:
 (use-package python
   :defer t
