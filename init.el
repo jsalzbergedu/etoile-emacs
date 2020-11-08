@@ -1,4 +1,9 @@
 ;; -*- lexical-binding: t; no-byte-compile: t -*-
+;; Set up emacs to use native compilation
+(setq invocation-name (file-name-nondirectory (car command-line-args)))
+(setq comp-deferred-compilation nil)
+
+;; Install straight
 (defvar bootstrap-version)
 (setq straight-repository-branch "develop")
 (let ((bootstrap-file

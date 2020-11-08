@@ -447,6 +447,9 @@ _j_: company-select-next-or-abort
   (:keymaps '(magit-mode-map magit-diff-mode-map)
             "SPC" nil))
 
+(use-package forge
+  :straight t)
+
 (use-package git-time-machine
   :straight t
   :defer t)
@@ -534,15 +537,25 @@ _j_: company-select-next-or-abort
 (use-package javascript-mode
   :defer t
   :straight nil
+  :init
+  (push `((js2-basic-offset . numberp)) safe-local-variable-values)
+  (setq lsp-clients-typescript-log-verbosity "debug"
+        lsp-clients-typescript-plugins
+        (vector (list :name "@vsintellicode/typescript-intellicode-plugin"
+                      :location "/home/jacob/.vscode-oss/extensions/visualstudioexptteam.vscodeintellicode-1.2.10/")
+                (list :name "typescript-tslint-plugin"
+                      :location "/usr/lib/node_modules/typescript-tslint-plugin/")
+                (list :name "editorconfig"
+                      :location "/home/jacob/.vscode-oss/extensions/editorconfig.editorconfig-0.15.1/")))
   :hook
   ((js-mode . lsp)
-   (js-mode . prog-minor-modes-common)))
+   (js-mode . prog-minor-modes-common)
+   (js-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer nil :local)))))
 
 (use-package indium
   :demand t
-  :after (javascript-mode)
+  :after (js)
   :straight t)
-
 
 ;; Java
 ;; TODO clean these up into + packages
@@ -798,12 +811,16 @@ _m_: dap-java-run-test-method"
 
 (use-package rust-mode
   :straight t
-  :defer t)
+  :defer t
+  :hook ((rust-mode . prog-minor-modes-common)))
 
 (use-package lsp-rust
   :demand t
   :after rust-mode
-  :straight nil)
+  :straight nil
+  :init
+  (setq lsp-rust-server 'rust-analyzer)
+  :hook ((rust-mode . lsp)))
 
 (use-package flycheck-rust
   :defer t
@@ -832,6 +849,8 @@ _m_: dap-java-run-test-method"
 (use-package auctex
   :defer t
   :straight t
+  :config
+  (setf (alist-get 'output-pdf TeX-view-program-selection) '("xdg-open"))
   :hook ((tex-mode . prog-minor-modes-common)
          (LaTeX-mode . prog-minor-modes-common)))
 
@@ -840,13 +859,6 @@ _m_: dap-java-run-test-method"
   :defer t
   :straight nil
   :config (progn (add-hook 'sgml-mode-hook 'prog-minor-modes-common)))
-
-(use-package prettier-js
-  :straight t
-  :demand t
-  :after sgml-mode
-  :hook ((sgml-mode . prettier-js-mode)
-         (json-mode . prettier-js-mode)))
 
 ;; Markdown
 (use-package markdown-mode
@@ -894,14 +906,13 @@ _m_: dap-java-run-test-method"
   :init
   (add-hook 'c-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
   (add-hook 'c++-mode-hook (lambda () (add-hook 'before-save-hook 'clang-format-buffer nil t)))
-  (setq clang-format-executable "/usr/bin/clang-format-9")
+  (setq clang-format-executable "/usr/bin/clang-format")
   (defun +clang-format-when-clang-format ()
     (interactive)
     "When there is a .clang-format, run clang-format"
     (when (file-exists-p (expand-file-name ".clang-format"))
       (clang-format-buffer)))
-  (add-hook 'java-mode-hook (lambda () (add-hook 'before-save-hook '+clang-format-when-clang-format nil t)))
-  (add-hook 'js-mode-hook (lambda () (add-hook 'before-save-hook '+clang-format-when-clang-format nil t))))
+  (add-hook 'java-mode-hook (lambda () (add-hook 'before-save-hook '+clang-format-when-clang-format nil t))))
 
 (use-package cdecl
   :straight t
@@ -981,10 +992,11 @@ _m_: dap-java-run-test-method"
   :defer t
   :after flycheck
   :init
-  (setq ccls-executable "/snap/bin/ccls")
+  (setq ccls-executable "ccls")
   (setq ccls-sem-highlight-method 'overlay)
   :straight t
   :config
+  (push 'clangd lsp-disabled-clients)
   (setq ccls-sem-highlight-method 'overlay)
   (eval-and-compile (ccls-use-default-rainbow-sem-highlight))
   (set-face-attribute 'ccls-code-lens-face nil
@@ -1455,6 +1467,20 @@ use NASM syntax,"
   (setq flycheck-checkstylerc "/home/jacob/development/checkstyle/csc_checkstyle.xml")
   (flycheck-add-next-checker 'lsp 'checkstyle)
   (push 'checkstyle flycheck-checkers))
+
+;; Add Jupyter
+(use-package zmq
+  :straight (zmq :no-native-compile t)
+  :defer t)
+
+(use-package jupyter
+  :straight (jupyter :no-native-compile t)
+  :defer t
+  :general
+  (:keymaps '(jupyter-repl-mode-map) :states '(insert)
+            "<escape>" 'evil-normal-state)
+  (:keymaps '(jupyter-repl-mode-map) :states '(normal motion)
+            "<escape>" 'evil-force-normal-state))
 
 (provide 'etoile-programming)
 ;;; etoile-programming.el ends here

@@ -154,10 +154,10 @@
   ;; (setq erc-autojoin-channels-alist (list (cons "freenode.net" (list "#stratis-storage" "#scheme")) (cons "mozilla.org" (list "#rust" "#rust-beginners" "#servo"))))
   ;; The above line got annoying
   (setq erc-prompt (concat "<jcob>:"))
-  (defun my-erc-connect ()
-    "Connect to the IRC servers I usually connect to"
-    (interactive)
-    (erc-tls :server "3.82.54.165" :port 5006))
+  ;; (defun my-erc-connect ()
+  ;;   "Connect to the IRC servers I usually connect to"
+  ;;   (interactive)
+  ;;   (erc-tls :server "3.82.54.165" :port 5006))
   (setq erc-autojoin-mode t
         erc-button-mode t
         erc-fill-mode t
@@ -248,8 +248,9 @@
 (use-package vterm
   :demand t
   :straight t
-  :config
-  (setq vterm-module-cmake-args "-DUSE_SYSTEM_LIBVTERM=no"))
+  :init
+  (setq vterm-module-cmake-args "-DUSE_SYSTEM_LIBVTERM=no")
+  (setq vterm-always-compile-module t))
 
 (use-package mu4e
   :straight nil
