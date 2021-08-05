@@ -29,6 +29,7 @@
 (require 'counsel-projectile)
 (require 'subr-x)
 (require 'hydra)
+(require 'flycheck)
 
 (defvar +projectile-local-commands '()
   "An alist of plists mapping project types to commands used on a project.")

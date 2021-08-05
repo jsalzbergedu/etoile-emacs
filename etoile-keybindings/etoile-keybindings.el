@@ -47,6 +47,7 @@
   :config
   (evil-mode 1)
   (global-undo-tree-mode)
+  (setq evil-undo-system 'undo-tree)
   :general
   (:keymaps '(normal motion)
             "SPC" nil

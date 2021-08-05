@@ -389,10 +389,6 @@ _j_: company-select-next-or-abort
   :after dap-mode
   :straight nil)
 
-(use-package dap-ui-repl
-  :after dap-mode
-  :straight nil)
-
 (use-package dap-hydra
   :after dap-mode
   :straight nil)
@@ -511,9 +507,7 @@ _j_: company-select-next-or-abort
 
 (use-package lsp-ui-flycheck
   :demand t
-  :straight nil
-  :config (add-hook 'lsp-after-open-hook
-                    (lambda () (lsp-flycheck-enable 1))))
+  :straight nil)
 
 
 ;; All c-likes
@@ -550,7 +544,7 @@ _j_: company-select-next-or-abort
   :hook
   ((js-mode . lsp)
    (js-mode . prog-minor-modes-common)
-   (js-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer nil :local)))))
+   (js-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer 0 :local)))))
 
 (use-package indium
   :demand t
@@ -1202,7 +1196,10 @@ _m_: dap-java-run-test-method"
   :config
   (+projectile-local-commands-add-type 'compiledb)
   (+projectile-local-commands-add-command 'compiledb :compile #'+cc-mode/compile)
-  (+projectile-local-commands-add-command 'compiledb :code-action #'lsp-ui-sideline-apply-code-actions))
+  (+projectile-local-commands-add-command 'compiledb :code-action #'lsp-ui-sideline-apply-code-actions)
+  :general (:keymaps '(c++-mode-map c-mode-map) :states '(normal motion)
+                     "C-c C-c" 'projectile-compile-project
+                     "C-c C-t" 'projectile-test-project))
 
 ;; Json
 (use-package json-mode
@@ -1375,38 +1372,38 @@ _m_: dap-java-run-test-method"
   :hook ((dune-mode . prog-minor-modes-common)))
 
 ;; Ocaml
-;; (use-package tuareg
-;;   :straight t
-;;   :defer t
-;;   :hook ((tuareg-mode . prog-minor-modes-common)
-;;          (tuareg-interactive-mode . prog-minor-modes-common)
-;;          (tuareg-opam-mode . prog-minor-modes-common)))
-;; 
-;; (use-package merlin
-;;   :demand t
-;;   :straight (merlin :type git
-;;                     :host github
-;;                     :repo "ocaml/merlin"
-;;                     :files ("emacs/*.el"))
-;;   :after lsp
-;;   :hook ((tuareg-mode . merlin-mode))
-;;   :config
-;;   (lsp-register-client
-;;    (make-lsp-client :new-connection (lsp-stdio-connection '("ocamlmerlin-server"))
-;;                     :major-modes '(tuareg-mode)
-;;                     :server-id 'merlin)))
-;; 
-;; (use-package utop
-;;   :straight t
-;;   :demand t
-;;   :after tuareg
-;;   :config
-;;   (setq utop-command "opam config exec -- utop -emacs")
-;;   (setq utop-edit-command nil))
-;; 
-;; (use-package ocp-indent
-;;   :straight t
-;;   :demand t)
+(use-package tuareg
+  :straight t
+  :defer t
+  :hook ((tuareg-mode . prog-minor-modes-common)
+         (tuareg-interactive-mode . prog-minor-modes-common)
+         (tuareg-opam-mode . prog-minor-modes-common)))
+
+(use-package merlin
+  :demand t
+  :straight (merlin :type git
+                    :host github
+                    :repo "ocaml/merlin"
+                    :files ("emacs/*.el"))
+  :after lsp
+  :hook ((tuareg-mode . lsp))
+  :config
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("ocamlmerlin"))
+                    :major-modes '(tuareg-mode)
+                    :server-id 'merlin)))
+
+(use-package utop
+  :straight t
+  :demand t
+  :after tuareg
+  :config
+  (setq utop-command "opam config exec -- utop -emacs")
+  (setq utop-edit-command nil))
+
+(use-package ocp-indent
+  :straight t
+  :demand t)
 ;; 
 
 ;; Pseudocode
@@ -1465,7 +1462,6 @@ use NASM syntax,"
   :config
   (setq flycheck-checkstyle-jar "/home/jacob/cs-checkstyle/checkstyle-6.1.1-all.jar")
   (setq flycheck-checkstylerc "/home/jacob/development/checkstyle/csc_checkstyle.xml")
-  (flycheck-add-next-checker 'lsp 'checkstyle)
   (push 'checkstyle flycheck-checkers))
 
 ;; Add Jupyter
