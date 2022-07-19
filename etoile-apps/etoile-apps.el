@@ -88,7 +88,10 @@
 
   ;;(ein:org-register-lang-mode "ein-c++" 'c++)
   ;; (require 'org-mks) ;; for some reason capture doesnt work without this
-  :commands (org-mode))
+  :commands (org-mode)
+  :general
+  (:keymaps '(org-mode-map)
+            "TAB" 'org-cycle))
 
 (use-package org-macs
   :demand t
@@ -305,6 +308,43 @@
 (use-package guix
   :straight (guix :no-native-compile t)
   :defer t)
+
+;; Use pdf view in w3m:
+(defun w3m-doc-view (url)
+  "View PDF/PostScript/DVI files using `doc-view-mode'.
+
+Where the document is displayed depends upon the `w3m-display-mode'."
+  (let* ((basename (file-name-nondirectory (w3m-url-strip-query url)))
+	 (regexp (concat "\\`" (regexp-quote basename) "\\(?:<[0-9]+>\\)?\\'"))
+	 (buffers (buffer-list))
+	 buffer data case-fold-search)
+    (save-current-buffer
+      (while buffers
+	(setq buffer (pop buffers))
+	(if (and (string-match regexp (buffer-name buffer))
+		 (progn
+		   (set-buffer buffer)
+		   (eq major-mode 'doc-view-mode))
+		 (equal buffer-file-name url))
+	    (setq buffers nil)
+	  (setq buffer nil))))
+    (unless (prog1
+		buffer
+	      (unless buffer
+		(setq buffer (generate-new-buffer basename)
+		      data (buffer-string)))
+	      (let ((pop-up-windows w3m-pop-up-windows)
+		    (pop-up-frames w3m-pop-up-frames))
+		(pop-to-buffer buffer)))
+      (set-buffer-multibyte nil)
+      (insert data)
+      (set-buffer-modified-p nil)
+      (setq buffer-file-name url)
+      (pdf-view-mode)
+      ;; (use-local-map w3m-doc-view-map)
+      ;; (set-keymap-parent w3m-doc-view-map doc-view-mode-map)
+      'internal-view))
+   )					;
 
 (provide 'etoile-apps)
 ;;; etoile-apps.el ends here

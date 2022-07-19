@@ -71,15 +71,51 @@ _e_: flycheck-list-errors
     ("N" flycheck-previous-error :color pink)
     ("e" flycheck-list-errors :color blue))
 
+(defun +projectile-google-scholar (string)
+  (interactive "Msearch string: ")
+  (let ((string (url-encode-url string)))
+    (w3m (format "https://scholar.google.com/scholar?q=%s" string))))
+
+(defun copy-citation-title ()
+    (interactive)
+    (ivy-read "Copy citation: " (create-citation-option-list (get-buffer-citations))
+              :initial-input nil
+              :dynamic-collection nil
+              :action (lambda (pair) (kill-new (cdr pair)))))
+
+(defun get-buffer-citations ()
+    (json-read-from-string (shell-command-to-string (concat "anystyle.sh " (shell-quote-argument buffer-file-name)))))
+
+(defun sort-citation-results (citations)
+  (sort citations (lambda (x y) (let* ((num-x (cdr-safe (car (-filter (lambda (x) (eq (car x) 'citation-number)) x))))
+                                  (num-y (cdr-safe (car (-filter (lambda (y) (eq (car y) 'citation-number)) y))))
+                                  (num-x (and (arrayp num-x) (aref num-x 0)))
+                                  (num-y (and (arrayp num-y) (aref num-y 0)))
+                                  (num-x (or (and (stringp num-x) (string-to-number num-x)) 1.0e+INF))
+                                  (num-y (or (and (stringp num-y) (string-to-number num-y)) 1.0e+INF))
+                                  (num-x (or (and (numberp num-x) (not (= num-x 0)) num-x) 1.0e+INF))
+                                  (num-y (or (and (numberp num-y) (not (= num-y 0)) num-y) 1.0e+INF)))
+                             (< num-x num-y)))))
+
+(defun create-citation-option-list (cl)
+  (cl-loop for citation across cl
+           collect `(,(format "%s: %s by %s"
+                              (car (-map 'cdr-safe (-filter (lambda (x) (eq (car x) 'citation-number)) citation)))
+                              (car (-map (lambda (x) (or (and x (aref x 0)) "No Title")) (-map 'cdr-safe (-filter (lambda (x) (eq (car x) 'title)) citation))))
+                              (car (-map (lambda (x) (seq-reduce (lambda (a z) (format "%s %s;%s" (alist-get 'family z) (alist-get 'given z) a)) x "")) (-map 'cdr-safe (-filter (lambda (x) (eq (car x) 'author)) citation)))))
+                     .
+                     ,(format "%s" (aref (or (car (-map 'cdr-safe (-filter (lambda (x) (eq (car x) 'title)) citation))) ["No Title"]) 0)))))
+
+
 (defhydra +projectile-hydra (:hint nil :color blue)
     "
 ^Project Operations^          ^Refactoring^                 ^Navigation^
 ^------------------^--------+-^----------------^----------+-^----------^---------------------------------
 _t_: +projectile-test-hydra | _a_ +projectile-code-action | _g_ counsel-projectile-rg
 _c_: +projectile-compile    | ^ ^                         | _p_ counsel-projectile-find-file
-^ ^                         | ^ ^                         | _f_ xref-find-definitions
-^ ^                         | ^ ^                         | _d_ xref-find-definitions-other-window
-^ ^                         | ^ ^                         | _e_ +projectile-flycheck-hydra
+_n_: org-capture            | ^ ^                         | _f_ xref-find-definitions
+_s_: google scholar         | ^ ^                         | _d_ xref-find-definitions-other-window
+_i_: copy citation          | ^ ^                         | _e_ +projectile-flycheck-hydra
 "
     ("t" +projectile-test-hydra)
     ("c" +projectile-compile)
@@ -88,7 +124,10 @@ _c_: +projectile-compile    | ^ ^                         | _p_ counsel-projecti
     ("f" xref-find-definitions)
     ("d" xref-find-definitions-other-window)
     ("e" +projectile-flycheck-hydra/body)
-    ("a" +projectile-code-action))
+    ("a" +projectile-code-action)
+    ("n" org-capture)
+    ("s" +projectile-google-scholar)
+    ("i" copy-citation-title))
 
 
 (provide '+projectile)
